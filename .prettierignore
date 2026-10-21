@@ -4,3 +4,7 @@ coverage
 reports
 artifacts
 docs/research/*.json
+# Release Please owns formatting of these generated files; schemas/version checks remain mandatory.
+.release-please-manifest.json
+CHANGELOG.md
+plugin/plugin.json
