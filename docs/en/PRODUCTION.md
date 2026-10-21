@@ -24,6 +24,8 @@ Expect `{"status":"ok"}`. The service uses `NODE_ENV=production`, a non-root use
 
 ## Updates and source builds
 
+Without Docker: extract the same release's server archive, install Node.js 24 LTS and pnpm 11.25.0, run `pnpm install --prod --frozen-lockfile`, securely supply `.env` and run `pnpm start` under a dedicated unprivileged service account. Startup loads `.env` and enforces `NODE_ENV=production` before loading the application. Supply process supervision, persistent storage, backups and HTTPS. Docker remains the simpler default.
+
 Back up the stopped data volume and encryption key before upgrading. Intentionally update the version in your existing `.env`, review new configuration fields, run `docker compose pull` followed by `docker compose up -d --no-build --wait` and recheck health/login/tools. Do not overwrite existing secrets with a new example file. Rollbacks require both the previous image and its matching database backup. Never use `docker compose down -v` to update.
 
 Developers can explicitly build from a source checkout instead:

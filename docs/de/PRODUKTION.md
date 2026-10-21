@@ -24,6 +24,8 @@ Die erwartete Antwort ist `{"status":"ok"}`. Der Dienst läuft mit `NODE_ENV=pro
 
 ## Updates und eigener Build
 
+Ohne Docker: Serverarchiv desselben Releases entpacken, Node.js 24 LTS und pnpm 11.25.0 installieren, `pnpm install --prod --frozen-lockfile` ausführen, `.env` sicher bereitstellen und `pnpm start` unter einem eigenen unprivilegierten Dienstkonto starten. Der Start lädt `.env` und erzwingt vor dem Laden der Anwendung `NODE_ENV=production`. Prozessüberwachung, persistentes Datenverzeichnis, Backups und HTTPS bleiben Betreiberaufgaben. Die Docker-Installation ist die einfachere Vorgabe.
+
 Sichere vor Updates das gestoppte Datenvolume und den Verschlüsselungsschlüssel. Übernimm die neue Versionsnummer bewusst in deine bestehende `.env`, kontrolliere neue Konfigurationsfelder, führe `docker compose pull` und `docker compose up -d --no-build --wait` aus und prüfe Health/Login/Tools erneut. Überschreibe bestehende Secrets nicht mit einer neuen Beispieldatei. Für einen Rollback gehören vorheriges Image und passendes Datenbankbackup zusammen. Niemals `docker compose down -v` als Update verwenden.
 
 Entwickler können alternativ im ausgecheckten Quellcode ausdrücklich selbst bauen:

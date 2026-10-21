@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.2](https://github.com/jtracht/gitea-chatgpt-plugin/compare/v0.3.1...v0.3.2) (2026-10-21)
+
+
+### Bug Fixes
+
+* **release:** ship production deployment package and polished branding ([#21](https://github.com/jtracht/gitea-chatgpt-plugin/issues/21)) ([ecc8980](https://github.com/jtracht/gitea-chatgpt-plugin/commit/ecc89801c19de3c5c8601c7036cc9dd5157b4256))
+
 ## [0.3.1](https://github.com/jtracht/gitea-chatgpt-plugin/compare/v0.3.0...v0.3.1) (2026-10-21)
 
 
