@@ -1,5 +1,4 @@
 import { createHash } from 'node:crypto';
-import { mkdirSync, writeFileSync } from 'node:fs';
 import { unzipSync, strFromU8 } from 'fflate';
 const repo = process.argv[2],
   tag = process.argv[3];
@@ -22,8 +21,6 @@ const metadata = (await release.json()) as {
   assets: { name: string; browser_download_url: string; size: number }[];
 };
 const files = new Map<string, Uint8Array>();
-const directory = 'reports/verified-' + tag;
-mkdirSync(directory, { recursive: true });
 for (const asset of metadata.assets) {
   if (
     !/^[A-Za-z0-9_.-]+$/.test(asset.name) ||
@@ -38,7 +35,6 @@ for (const asset of metadata.assets) {
   if (!response.ok) throw new Error('Anonymous download failed');
   const bytes = new Uint8Array(await response.arrayBuffer());
   files.set(asset.name, bytes);
-  writeFileSync(directory + '/' + asset.name, bytes);
 }
 const sums = files.get('SHA256SUMS');
 if (!sums) throw new Error('Missing checksums');
