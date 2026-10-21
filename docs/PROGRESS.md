@@ -1,6 +1,6 @@
 # Nachweisbarer Projektfortschritt
 
-Start: 21.10.2026. Letzter geprüfter Meilenstein: **95 %**.
+Start: 21.10.2026. Abschließender geprüfter Meilenstein: **98 %**.
 
 Jede Phase hat vorab folgende prüfbare Teilaufgaben. Teilpunkte werden erst nach Prüfung vergeben.
 
@@ -12,7 +12,7 @@ Jede Phase hat vorab folgende prüfbare Teilaufgaben. Teilpunkte werden erst nac
 | Auth/Sicherheit  |      15 | OAuth und Discovery; verschlüsselte Mandantentrennung; SSRF; unabhängige Schreibfreigabe; Sicherheitstests | 15/15                                                     |
 | MCP/Plugin       |      20 | Tools/Schemas; Transport/Clienttest; portables Manifest; Archivprüfung                                     | 20/20                                                     |
 | Tests            |      15 | Unit; Integration; Sicherheit/Coverage; realistisches Gitea-E2E; Docker/Health                             | 15/15                                                     |
-| CI/CD            |      10 | CI grün; Security grün; Release Please geprüft; Publish geprüft                                            | 7,5/10; regulärer Release-PR noch in Prüfung              |
+| CI/CD            |      10 | CI grün; Security grün; Release Please geprüft; Publish geprüft                                            | 10/10                                                     |
 | Dokumentation    |       5 | DE/EN; Deployment/Installation/Rollback                                                                    | 5/5                                                       |
 | Veröffentlichung |       5 | Öffentliches Repository/Push; Schutz/CI; Tag/Assets/Image geprüft                                          | 3,33/5; Artefakte geprüft, Kontoendabnahme zurückgestellt |
 
@@ -42,11 +42,15 @@ Die terminale Releaseabnahme umfasst zusätzlich die vom Auftrag verlangte tats�
 - Vier veröffentlichte Assets wurden ohne Anmeldung heruntergeladen; ZIP-Komponenten und SHA-256-Prüfsummen geprüft. Unabhängig wiederholbar: `pnpm exec tsx scripts/verify-release.ts jtracht/gitea-chatgpt-plugin v0.1.0`.
 - `ghcr.io/jtracht/gitea-chatgpt-plugin:v0.1.0` wurde mit leerer Docker-Anmeldekonfiguration anonym heruntergeladen. Digest: `sha256:ec133e674551440cc73537334d3b3f5f07e88c48ae9c1082d8e46410c381202e`.
 - Quellcode-Freigaben: [PR #5](https://github.com/jtracht/gitea-chatgpt-plugin/pull/5), Hauptbranch `250de18794d49c6d581fd623ebd42fa61afe02ff`; [PR #9](https://github.com/jtracht/gitea-chatgpt-plugin/pull/9), Hauptbranch `2519ddf28ea83ea1f0d53abcdff309e286fba556`. Reguläre Pflichtchecks bestanden; keine Adminumgehung verwendet.
-- Patchkorrektur: abgelaufene Gitea-Zugangsdaten führen zur Gitea-Neuverbindung im Portal, nicht zu einem irreführenden neuen MCP-OAuth-Dialog. Regulärer Release-Please-Prozess wird daran geprüft.
+- Patchkorrektur: abgelaufene Gitea-Zugangsdaten führen zur Gitea-Neuverbindung im Portal, nicht zu einem irreführenden neuen MCP-OAuth-Dialog. Der reguläre Release-Please-Prozess wurde daran vollständig nachgewiesen.
+- Empfohlen: [v0.1.1](https://github.com/jtracht/gitea-chatgpt-plugin/releases/tag/v0.1.1), Release-Commit/Tag `28fe6adb022f42f77dbbd303e9ecdfa5d9b2e2f6`. Release Please erstellte [PR #10](https://github.com/jtracht/gitea-chatgpt-plugin/pull/10) mit konsistenten Paket-/Plugin-/Server-/Manifestversionen. Pflichtchecks bestanden und regulär gemergt. [Release-/Publish-Lauf](https://github.com/jtracht/gitea-chatgpt-plugin/actions/runs/39557081355): sämtliche Jobs erfolgreich.
+- Auch für v0.1.1 wurden vier Assets anonym heruntergeladen, ZIP und Prüfsummen validiert. Wiederholbar: `pnpm exec tsx scripts/verify-release.ts jtracht/gitea-chatgpt-plugin v0.1.1`. ZIP, Serverarchiv, Prüfsummen und Containerdigest liegen zusätzlich lokal unter `artifacts/`.
+- `ghcr.io/jtracht/gitea-chatgpt-plugin:v0.1.1`: anonymer Pull erfolgreich; Digest `sha256:ad4087f0a170986f2b01a0656f599a35993ec442af2ae2010b0d5c3fa5f6af86`. Dieses veröffentlichte Image wurde anschließend als Benutzer `node` mit schreibgeschütztem Root-Dateisystem gestartet; `/healthz` meldet `{"status":"ok"}`. SBOM und Provenance werden mit dem Image veröffentlicht.
+- Generatorformatierung von Release Please wird akzeptiert; Quellcodeformat-, Schema- und Versionsprüfungen bleiben verpflichtend. Erstfreigabe des von GitHub angehaltenen Bot-Workflows erfolgte für den überprüften Release-PR; die expliziten Dispatch-Prüfungen waren ebenfalls erfolgreich. Keine Schutzregel wurde zum Merge abgeschaltet.
+- Gesamtgewicht: 5 + 10 + 15 + 15 + 20 + 15 + 10 + 5 + 3,33 = 98,33 %, abgerundet **98 %**. Der verbleibende Teil ist die bewusst zurückgestellte Kontoverbindung; deshalb keine 100-%-Behauptung.
 
 ## Noch nicht verifiziert
 
-- Noch in Arbeit: regulärer Patch-Release-PR und dessen veröffentlichte Artefakte.
 - **Vom Benutzer ausdrücklich zurückgestellt:** produktives HTTPS-Deployment mit eigenem OAuth-Anbieter. Gewünscht sind Installationspaket und Anleitung.
 - **Nicht verifiziert:** tatsächliche Installation/Toolauswahl im ChatGPT-/Codex-Konto. Die vorhandene lokale SDK-Clientprüfung ersetzt diese Abnahme nicht. Kein konkreter produktiver MCP-Endpunkt wird behauptet.
 - Öffentliche Verzeichnisfreigabe, unabhängiger Penetrationstest und jede ältere Gitea-Version. Optional nicht vorhandene APIs scheitern geschlossen.
