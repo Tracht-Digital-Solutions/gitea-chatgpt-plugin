@@ -50,6 +50,15 @@ async function login(h: ReturnType<typeof host>) {
   return { sid, csrf };
 }
 describe('secure browser setup and independent approvals', () => {
+  it('returns HTTP 429 when browser routes exceed the shared IP budget', async () => {
+    const { h, store } = setup();
+    for (let i = 0; i < 60; i++)
+      expect((await h.get('/portal')).status).toBe(302);
+    const blocked = await h.get('/portal');
+    expect(blocked.status).toBe(429);
+    expect(blocked.body.error).toBe('RATE_LIMITED');
+    store.close();
+  });
   it('requires browser login and rejects missing, mismatched, reused OAuth state', async () => {
     const { h, store } = setup();
     expect((await h.get('/portal')).headers.location).toBe('/login');
