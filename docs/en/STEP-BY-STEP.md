@@ -2,6 +2,8 @@
 
 [Deutsch](../de/SCHRITT-FUER-SCHRITT.md) · Updated: 2026-10-21 · Software: v0.3.1.
 
+For installation without Git or a local build, see [production package setup](PRODUCTION.md). Default Compose uses a published image and `NODE_ENV=production`. Keep `GITEA_MCP_VERSION` from the release's `.env.example`; update it intentionally when upgrading. Source builds additionally require `docker-compose.build.yml`.
+
 This guide takes you from your own server to your first approved write operation. Commands use a Linux shell. The project does not provide a hosted MCP service. Production HTTPS/OAuth deployment and installation in a real ChatGPT/Codex account remain unverified; run the checkpoints below on your own system.
 
 ## 1. Prepare infrastructure and addresses
@@ -120,7 +122,8 @@ For intentionally internal Gitea hosts, the operator must explicitly allow only 
 ## 8. Start the MCP server
 
 ```bash
-docker compose up -d --build
+docker compose pull
+docker compose up -d --no-build --wait
 docker compose ps
 docker compose logs --tail=50 mcp
 curl --fail http://127.0.0.1:3000/healthz
@@ -146,7 +149,7 @@ For **Nginx Proxy Manager running in Docker**:
        name: YOUR_EXISTING_PROXY_NETWORK
    ```
 
-3. Run `docker compose up -d --build` again.
+3. Run `docker compose up -d --no-build --wait` again.
 4. Add a **Proxy Host** for the MCP domain: Forward Scheme `http`, Forward Hostname `mcp`, Port `3000`.
 5. Enable a valid SSL certificate and **Force SSL**, preserve the original Host header, and disable buffering for MCP. Do not place an additional Basic Auth gate in front of the MCP endpoint.
 

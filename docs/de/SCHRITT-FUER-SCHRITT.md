@@ -2,6 +2,8 @@
 
 [English](../en/STEP-BY-STEP.md) · Stand: 21.10.2026 · Software: v0.3.1.
 
+Für die Installation ohne Git und lokalen Build: [Produktionspaket einrichten](PRODUKTION.md). Der Standard-Compose verwendet ein veröffentlichtes Image und `NODE_ENV=production`. Behalte `GITEA_MCP_VERSION` aus der zum Release gehörenden `.env.example`; nach einem Upgrade diese Versionsnummer bewusst aktualisieren. Ein eigener Build benötigt zusätzlich `docker-compose.build.yml`.
+
 Diese Anleitung führt vom eigenen Server bis zum ersten freigegebenen Schreibauftrag. Die Befehle verwenden eine Linux-Shell. Es wird kein öffentlicher MCP-Dienst bereitgestellt. HTTPS-Deployment und die Verbindung in deinem tatsächlichen ChatGPT-/Codex-Konto sind noch nicht projektseitig verifiziert; die nachfolgenden Kontrollpunkte sind von dir auf deinem System auszuführen.
 
 ## 1. Voraussetzungen und eigene Adressen festlegen
@@ -125,7 +127,8 @@ Bei einer absichtlich internen Gitea-Instanz muss der Betreiber zusätzlich auss
 ## 8. MCP-Server starten
 
 ```bash
-docker compose up -d --build
+docker compose pull
+docker compose up -d --no-build --wait
 docker compose ps
 docker compose logs --tail=50 mcp
 curl --fail http://127.0.0.1:3000/healthz
@@ -151,7 +154,7 @@ Für **Nginx Proxy Manager in Docker**:
        name: DEIN_BESTEHENDES_PROXY_NETZ
    ```
 
-3. Starte `docker compose up -d --build` erneut.
+3. Starte `docker compose up -d --no-build --wait` erneut.
 4. Lege einen **Proxy Host** mit deiner MCP-Domain an: Forward Scheme `http`, Forward Hostname `mcp`, Port `3000`.
 5. Aktiviere ein gültiges SSL-Zertifikat und **Force SSL**, erhalte den Hostheader und deaktiviere Proxybuffering für MCP. Setze keine zusätzliche Basic-Auth-Sperre vor den MCP-Endpunkt.
 

@@ -2,6 +2,16 @@
 
 Start: 21.10.2026. Abschließender geprüfter Meilenstein: **98 %**.
 
+## Produktionspaket und Branding (21.10.2026)
+
+- Standard-Compose verwendet ein ausdrücklich versionsgebundenes GHCR-Image und `NODE_ENV=production`; eigener Quellcode-Build ist ein separates Override. Non-Root, schreibgeschütztes Root-Dateisystem, Init-Prozess, Prozesslimit, Logrotation und persistentes Datenvolume sind eingerichtet.
+- Neues eigenständiges Deployment-ZIP mit Beispielkonfiguration, Compose und DE-/EN-Produktionsanleitung; kein Git/Node/Build beim Betreiber nötig. Release Please aktualisiert die Imageversionsvorgabe zusammen mit der Softwareversion. Reguläre Releases sind ausdrücklich weder Entwürfe noch Vorabversionen.
+- Eigenes Teetassen-/Git-/Dialog-Icon als editierbares SVG und reproduzierbares 512-Pixel-PNG. Manifest, Plugin-ZIP, Serverarchiv und Docker-Image enthalten die benötigten Branding-Dateien; Portal mit Favicon, responsiver Gestaltung und Dark Mode. CSP erlaubt nur lokale Bilder/Styles, keine Skripte oder Inline-Styles.
+- Lokaler Nachweis: **508 Tests erfolgreich**, sechs Real-E2E-Tests im normalen Lauf bewusst übersprungen; Kernabdeckung 98,08 % Statements / 94,53 % Branches / 100 % Functions / 98,96 % Lines. Typecheck, ESLint, Prettier, 159 Tool-Schemas und Produktionsbuild erfolgreich. Dependency-Audit: keine bekannten Schwachstellen.
+- Zusätzlich tatsächlich ausgeführt: Produktionsimage ohne Root und mit schreibgeschütztem Dateisystem gestartet, PNG-Abmessungen/Erreichbarkeit, OAuth-Pflicht und Health geprüft. Deployment-ZIP isoliert entpackt, Compose-Konfiguration auf feste Version/Sicherheitsoptionen geprüft und mit Testimage samt eigenem Datenvolume erfolgreich gestartet und aufgeräumt. CI und Publish führen diese Prüfungen verpflichtend aus.
+- Die neue Logo-Grafik erforderte eine Präzisierung des bisherigen XSS-Tests: Angreifer-HTML muss weiterhin maskiert sein, ausschließlich das feste lokale Logo wird als Bildelement zugelassen. Ein anfangs fehlerhafter HTTP-Testclient wurde korrigiert; Host-Validierung im Produkt bleibt unverändert.
+- Fortschritt unverändert **98 %**: Produktive HTTPS-/OAuth-Konfiguration und Installation im tatsächlichen ChatGPT-/Codex-Konto bleiben wie vereinbart offen. Ein Produktionsbuild ist kein Nachweis eines bereitgestellten Hosts.
+
 Jede Phase hat vorab folgende prüfbare Teilaufgaben. Teilpunkte werden erst nach Prüfung vergeben.
 
 | Phase            | Gewicht | Teilaufgaben (gleich gewichtet innerhalb der Phase)                                                        | Nachweis                                                  |

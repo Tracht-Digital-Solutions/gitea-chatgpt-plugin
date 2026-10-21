@@ -27,6 +27,9 @@ jobs:
       - run: pnpm package
       - run: docker build -t gitea-chatgpt-plugin:dev .
       - run: pnpm test:docker
+      - run: pnpm test:deployment
+        env:
+          DOCKER_TEST_IMAGE: gitea-chatgpt-plugin:dev
       - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         if: always()
         with:

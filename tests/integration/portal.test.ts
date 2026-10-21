@@ -55,6 +55,37 @@ async function login(h: ReturnType<typeof host>) {
   return { sid, csrf };
 }
 describe('secure browser setup and independent approvals', () => {
+  it('serves local branding without allowing scripts or external resources', async () => {
+    const { h, store, app } = setup();
+    try {
+      const icon = await h.get('/assets/icon.png');
+      expect(icon.status).toBe(200);
+      expect(icon.headers['content-type']).toBe('image/png');
+      expect((icon.body as Buffer).readUInt32BE(16)).toBe(512);
+      expect((icon.body as Buffer).readUInt32BE(20)).toBe(512);
+      const css = await h.get('/assets/portal.css');
+      expect(css.status).toBe(200);
+      expect(css.headers['content-security-policy']).toContain(
+        "default-src 'none'",
+      );
+      expect(css.headers['content-security-policy']).toContain(
+        "style-src 'self'",
+      );
+      expect(css.headers['content-security-policy']).not.toContain(
+        'unsafe-inline',
+      );
+      const { sid } = await login(h);
+      const page = await h.get('/portal').set('Cookie', sid);
+      expect(page.text).toContain('href="/assets/portal.css"');
+      expect(page.text).toContain('src="/assets/icon.png"');
+      const denied = await supertest(app)
+        .get('/assets/icon.png')
+        .set('Host', 'untrusted.example');
+      expect(denied.status).toBe(403);
+    } finally {
+      store.close();
+    }
+  });
   it('starts without a predefined Gitea host and asks the operator to configure their own server', async () => {
     const request = vi.fn(async () =>
       response({ access_token: 'test-access' }),
@@ -183,7 +214,9 @@ describe('secure browser setup and independent approvals', () => {
     expect(view.status).toBe(200);
     expect(view.text).toContain('&lt;script&gt;');
     expect(view.text).not.toContain('<script>');
-    expect(view.text).not.toContain('<img');
+    expect(view.text).toContain('&lt;img src=x onerror=alert(1)&gt;');
+    expect(view.text).not.toContain('<img src=x');
+    expect(view.text.match(/<img\b/g)).toHaveLength(1);
     expect(
       (
         await h

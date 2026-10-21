@@ -3,9 +3,12 @@
   "release-type": "node",
   "include-v-in-tag": true,
   "include-component-in-tag": false,
+  "draft": false,
+  "prerelease": false,
   "packages": {
     ".": {
       "extra-files": [
+        ".env.example",
         {
           "type": "json",
           "path": "plugin/plugin.json",

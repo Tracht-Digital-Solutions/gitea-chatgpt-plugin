@@ -1,5 +1,9 @@
 # Gitea for ChatGPT
 
+<img src="../../plugin/assets/icon.png" width="96" height="96" alt="Gitea for ChatGPT: a tea cup with a Git branch and conversation tail">
+
+**Production package:** Releases include a standalone `gitea-deployment-VERSION.zip` with version-pinned Docker configuration and German/English instructions. See [production installation](PRODUCTION.md). The service uses `NODE_ENV=production`; provide your own HTTPS/OAuth deployment.
+
 [Deutsch](../../README.md) · Apache-2.0 · Early development releases in the 0.x series.
 
 **Installation and setup:** [Step-by-step guide](STEP-BY-STEP.md) covering Docker, OAuth/Keycloak, HTTPS, Gitea connections, ChatGPT/Codex, and troubleshooting.
@@ -18,7 +22,8 @@ cd gitea-chatgpt-plugin
 cp .env.example .env
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 # Configure encryption key, your HTTPS origin, OAuth endpoints and allowed Gitea instances.
-docker compose up -d --build
+docker compose pull
+docker compose up -d --no-build --wait
 ```
 
 You must provide your own HTTPS reverse proxy and OAuth/OIDC provider. The server has no unauthenticated production mode. See [deployment](DEPLOYMENT.md) and [security](SECURITY.md).
