@@ -86,6 +86,8 @@ Register the redirect URI only after obtaining the **actual callback address sho
 
 ## 7. Create the environment configuration
 
+The supplied configuration has no Gitea server: `GITEA_INSTANCES=[]`. Enter your own Gitea HTTPS address in the configuration below. All example hosts in this guide are placeholders to replace, not automatic connections. With an empty list, the service starts and the portal displays setup instructions.
+
 ```bash
 umask 077
 cp .env.example .env

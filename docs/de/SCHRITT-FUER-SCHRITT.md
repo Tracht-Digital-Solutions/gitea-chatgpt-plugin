@@ -91,6 +91,8 @@ Die Redirect URI trägst du **erst anhand der tatsächlich angezeigten Callback-
 
 ## 7. `.env` erstellen und ausfüllen
 
+Die mitgelieferte Konfiguration enthält keinen Gitea-Server: `GITEA_INSTANCES=[]`. Trage im folgenden Beispiel die HTTPS-Adresse deines eigenen Gitea-Servers ein. Die Beispielhosts in dieser Anleitung sind ausschließlich zu ersetzende Platzhalter und werden nicht automatisch verbunden. Bei leerer Liste startet der Dienst mit einem Einrichtungshinweis im Portal.
+
 ```bash
 umask 077
 cp .env.example .env

@@ -81,7 +81,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
             return z.NEVER;
           }
         })
-        .pipe(z.array(instanceSchema).min(1)),
+        .pipe(z.array(instanceSchema)),
       ALLOWED_PRIVATE_CIDRS: z.string().default(''),
     })
     .parse(env);

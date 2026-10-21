@@ -15,9 +15,9 @@ const host = (app: Express) => ({
       .set('Host', 'mcp.example.org')
       .set('Origin', config.publicUrl),
 });
-function setup(request?: Requester) {
+function setup(request?: Requester, instances = config.instances) {
   const store = new Store(':memory:', config.encryptionKey);
-  const result = createApp(config, store, {
+  const result = createApp({ ...config, instances }, store, {
     authenticate: async () => identity,
     request:
       request ??
@@ -28,7 +28,12 @@ function setup(request?: Requester) {
             ? response({ access_token: 'gitea-access-token', expires_in: 3600 })
             : response({ login: 'alice' })),
   });
-  return { store, app: result.app, h: host(result.app) };
+  return {
+    store,
+    app: result.app,
+    service: result.service,
+    h: host(result.app),
+  };
 }
 async function login(h: ReturnType<typeof host>) {
   const start = await h.get('/login');
@@ -50,6 +55,32 @@ async function login(h: ReturnType<typeof host>) {
   return { sid, csrf };
 }
 describe('secure browser setup and independent approvals', () => {
+  it('starts without a predefined Gitea host and asks the operator to configure their own server', async () => {
+    const request = vi.fn(async () =>
+      response({ access_token: 'test-access' }),
+    );
+    const { h, store, service } = setup(request, []);
+    try {
+      const { sid, csrf } = await login(h);
+      request.mockClear();
+      const view = await h.get('/portal').set('Cookie', sid);
+      expect(view.text).toContain('Eigenen Gitea-Server einrichten');
+      expect(view.text).toContain('GITEA_INSTANCES');
+      expect(view.text).not.toContain('name="token"');
+      expect(
+        await service.execute(identity, 'list_instances', {}),
+      ).toMatchObject({ available: [], connected: [] });
+      const denied = await h
+        .post('/connections')
+        .set('Cookie', sid)
+        .type('form')
+        .send({ csrf, instance: 'unconfigured', token: 'fixture-token' });
+      expect(denied.status).toBe(403);
+      expect(request).not.toHaveBeenCalled();
+    } finally {
+      store.close();
+    }
+  });
   it('returns HTTP 429 when browser routes exceed the shared IP budget', async () => {
     const { h, store } = setup();
     for (let i = 0; i < 60; i++)

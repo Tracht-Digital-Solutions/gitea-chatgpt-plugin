@@ -47,7 +47,7 @@ Anschließend HTTPS-Reverse-Proxy auf Port 3000 einrichten. Der MCP-Endpunkt lau
 
 ## Gitea verbinden
 
-1. Betreiber trägt erlaubte Instanzen unter `GITEA_INSTANCES` ein. Die Beispieladresse in `.env.example` ist austauschbar.
+1. **Eigenen Gitea-Server einrichten:** Es ist kein Gitea-Server vorkonfiguriert (`GITEA_INSTANCES=[]`). Trage in deiner lokalen `.env` die HTTPS-Adresse deines eigenen Servers ein, z. B. `GITEA_INSTANCES=[{"id":"mein-server","url":"https://DEIN-GITEA-HOST"}]`, und starte den MCP-Server neu. Ersetze den Platzhalter durch deinen tatsächlichen Host; mehrere Server sind möglich.
 2. Browserportal öffnen und beim eigenen OAuth-Anbieter anmelden.
 3. Gitea-OAuth nutzen, falls für diese Instanz eingerichtet; alternativ ein möglichst eng berechtigtes persönliches Access-Token ausschließlich im Passwortfeld des Portals eingeben.
 4. `list_instances`, `connection_status` und `list_repositories` testen.

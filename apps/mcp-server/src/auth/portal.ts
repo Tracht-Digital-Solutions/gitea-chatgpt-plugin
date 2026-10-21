@@ -182,6 +182,9 @@ export function mountPortal(
       res,
       'Gitea for ChatGPT – Verbindungen',
       '<p>Zugangsdaten ausschließlich hier eingeben. Schreibaufträge benötigen eine separate Freigabe.</p>' +
+        (config.instances.length === 0
+          ? '<section><h2>Eigenen Gitea-Server einrichten</h2><p>Es ist noch kein Gitea-Server eingerichtet. Trage als Betreiber die HTTPS-Adresse deines eigenen Servers unter <code>GITEA_INSTANCES</code> in der Serverkonfiguration ein und starte den MCP-Server neu. Danach kannst du hier dein Gitea-Konto verbinden.</p></section>'
+          : '<p>Wähle deinen eigenen, vom Betreiber freigegebenen Gitea-Server und verbinde dein Konto.</p>') +
         config.instances
           .map(
             (i) =>
