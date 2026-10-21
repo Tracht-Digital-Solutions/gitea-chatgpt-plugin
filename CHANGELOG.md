@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.3](https://github.com/jtracht/gitea-chatgpt-plugin/compare/v0.3.2...v0.3.3) (2026-10-21)
+
+
+### Miscellaneous Chores
+
+* release 0.3.3 ([#24](https://github.com/jtracht/gitea-chatgpt-plugin/issues/24)) ([046600a](https://github.com/jtracht/gitea-chatgpt-plugin/commit/046600a787dec1df53cccb953d441ed266c2070b))
+
 ## [0.3.2](https://github.com/jtracht/gitea-chatgpt-plugin/compare/v0.3.1...v0.3.2) (2026-10-21)
 
 
