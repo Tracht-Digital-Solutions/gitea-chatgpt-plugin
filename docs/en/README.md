@@ -8,7 +8,7 @@ A self-hosted Node.js 24/TypeScript MCP server and portable Agent Plugins packag
 
 ## Install
 
-New on main: [complete issue/project fields, organizations, repository creation, generic packages, sprint milestones, releases and wiki](PARAMETER-AND-FUNCTION-VERIFICATION.md), plus real isolated runner execution/rerun/cancellation tests. These additions are not yet part of v0.2.0.
+From v0.3.0: [complete issue/project fields, organizations, repository creation, generic packages, sprint milestones, releases and wiki](PARAMETER-AND-FUNCTION-VERIFICATION.md), plus real isolated runner execution/rerun/cancellation tests.
 
 Available from v0.2.0: [Actions control, projects/Kanban, and time tracking](PROJECTS-ACTIONS-TIME.md), with exact browser approval for mutations.
 

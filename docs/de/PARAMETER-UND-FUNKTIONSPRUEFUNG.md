@@ -1,6 +1,6 @@
 # Parameter- und Funktionsprüfung
 
-[English](../en/PARAMETER-AND-FUNCTION-VERIFICATION.md). Stand: 21.10.2026. Die hier beschriebenen Ergänzungen liegen im Hauptbranch für den nächsten Release; v0.2.0 enthält sie noch nicht.
+[English](../en/PARAMETER-AND-FUNCTION-VERIFICATION.md). Stand: 21.10.2026. Die hier beschriebenen Ergänzungen sind ab v0.3.0 verfügbar.
 
 Referenz sind die [offizielle Gitea-28-API](https://docs.gitea.com/api/), ihre [OpenAPI-Spezifikation](https://docs.gitea.com/openapi3-28.json) sowie die [Generic-Package-Dokumentation](https://docs.gitea.com/usage/packages/generic/). Die vollständige Feldabdeckung bezieht sich auf die dokumentierten Create-/Edit-Payloads dieser Version, nicht auf beliebige Felder eines zurückgelieferten Objekts oder zukünftige APIs. Alle Eingaben sind zusätzlich auf Typ, Länge und Wertebereich begrenzt.
 

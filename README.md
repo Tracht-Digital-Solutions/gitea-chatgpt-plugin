@@ -13,7 +13,7 @@ Ein selbst hostbarer MCP-Server mit portablem Agent-Plugins-Paket für die Verwa
 
 ## Funktionen
 
-Neu im Hauptbranch: [vollständige Issue-/Projektfelder, Organisations- und Repositoryerstellung, Packages, Sprint-Meilensteine, Releases und Wiki](docs/de/PARAMETER-UND-FUNKTIONSPRUEFUNG.md). Actions-Wiederholungen und Laufabbrüche sind zusätzlich mit einem echten isolierten Runner geprüft. Diese Ergänzungen sind noch nicht in v0.2.0 enthalten.
+Ab v0.3.0: [vollständige Issue-/Projektfelder, Organisations- und Repositoryerstellung, Packages, Sprint-Meilensteine, Releases und Wiki](docs/de/PARAMETER-UND-FUNKTIONSPRUEFUNG.md). Actions-Wiederholungen und Laufabbrüche sind zusätzlich mit einem echten isolierten Runner geprüft.
 
 - Mehrere getrennte Gitea-Verbindungen pro OAuth-Benutzer, aktive Instanz, Status, Benutzer und API-Version.
 - Repositories lesen, suchen, erstellen und ausgewählte Einstellungen ändern; Dateien, Verzeichnisse, Git-Bäume, Statistikfelder, Branches und Tags lesen.
