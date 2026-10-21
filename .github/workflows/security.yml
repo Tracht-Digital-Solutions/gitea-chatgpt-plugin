@@ -26,9 +26,12 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm audit --audit-level=high
-      - uses: gitleaks/gitleaks-action@dcedce43c6f43de0b836d1fe38946645c9c638dc # v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Gitleaks full history (free CLI, including root commit)
+        run: |
+          docker run --rm --entrypoint /bin/sh \
+            --mount "type=bind,source=$GITHUB_WORKSPACE,target=/src,readonly" \
+            zricethezav/gitleaks@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f \
+            -c 'git config --global --add safe.directory /src && gitleaks git /src --log-opts="--all" --redact --exit-code=1'
   codeql:
     runs-on: ubuntu-latest
     timeout-minutes: 15
