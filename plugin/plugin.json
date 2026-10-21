@@ -1,9 +1,11 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "gitea-chatgpt-plugin",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Manage your own Gitea instances through authenticated MCP tools with independent human approval for writes.",
-  "author": { "name": "jtracht" },
+  "author": {
+    "name": "jtracht"
+  },
   "license": "Apache-2.0",
   "repository": "https://github.com/jtracht/gitea-chatgpt-plugin",
   "extensions": {
@@ -14,7 +16,10 @@
         "longDescription": "Connect your self-hosted Gitea instances, inspect repositories and issues, and approve concrete changes through your own secure browser portal.",
         "developerName": "jtracht",
         "category": "Productivity",
-        "capabilities": ["Read", "Write"],
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
         "defaultPrompt": "List my connected Gitea repositories.",
         "logo": "./assets/icon.svg"
       }
