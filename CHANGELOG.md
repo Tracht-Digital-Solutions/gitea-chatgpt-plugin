@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/jtracht/gitea-chatgpt-plugin/compare/v0.2.0...v0.3.0) (2026-10-21)
+
+
+### Features
+
+* complete issue parameters and add organization package and wiki publishing ([#17](https://github.com/jtracht/gitea-chatgpt-plugin/issues/17)) ([59f7347](https://github.com/jtracht/gitea-chatgpt-plugin/commit/59f7347a4a0c15b709dceb8117a116c3685a8328))
+
 ## [0.2.0](https://github.com/jtracht/gitea-chatgpt-plugin/compare/v0.1.1...v0.2.0) (2026-10-21)
 
 
