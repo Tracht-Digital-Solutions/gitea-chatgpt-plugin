@@ -1,5 +1,6 @@
 import { execFileSync } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
+import { request as httpRequest, type IncomingHttpHeaders } from 'node:http';
 const name = 'gitea-mcp-smoke-' + randomBytes(5).toString('hex');
 const docker = (args: string[]) =>
   execFileSync('docker', args, {
@@ -39,9 +40,8 @@ try {
     '-e',
     'ENCRYPTION_KEY=' + randomBytes(32).toString('hex'),
     '-e',
-    'GITEA_INSTANCES=' +
-      JSON.stringify([{ id: 'test', url: 'https://git.example.org' }]),
-    'gitea-chatgpt-plugin:dev',
+    'GITEA_INSTANCES=[]',
+    process.env.DOCKER_TEST_IMAGE ?? 'gitea-chatgpt-plugin:dev',
   ]);
   const port = docker(['port', name, '3000/tcp']).split(':').at(-1)!;
   let ready = false;
@@ -58,6 +58,56 @@ try {
     await new Promise((r) => setTimeout(r, 1000));
   }
   if (!ready) throw new Error('Docker health failed');
+  const probe = (path: string, method = 'GET') =>
+    new Promise<{ status: number; headers: IncomingHttpHeaders; body: Buffer }>(
+      (resolve, reject) => {
+        const req = httpRequest(
+          'http://127.0.0.1:' + port + path,
+          {
+            method,
+            headers: { Host: 'mcp.example.org' },
+            timeout: 5000,
+          },
+          (res) => {
+            const chunks: Buffer[] = [];
+            res.on('data', (chunk: Buffer) => chunks.push(chunk));
+            res.on('end', () =>
+              resolve({
+                status: res.statusCode!,
+                headers: res.headers,
+                body: Buffer.concat(chunks),
+              }),
+            );
+            res.on('error', reject);
+          },
+        );
+        req.on('timeout', () => req.destroy(new Error('Probe timeout')));
+        req.on('error', reject);
+        req.end();
+      },
+    );
+  docker([
+    'exec',
+    name,
+    'node',
+    '-e',
+    "if(process.env.NODE_ENV!=='production'||process.getuid()===0)process.exit(1)",
+  ]);
+  const icon = await probe('/assets/icon.png');
+  const png = icon.body;
+  if (
+    icon.status !== 200 ||
+    icon.headers['content-type'] !== 'image/png' ||
+    png.subarray(0, 8).toString('hex') !== '89504e470d0a1a0a' ||
+    png.readUInt32BE(16) !== 512 ||
+    png.readUInt32BE(20) !== 512
+  )
+    throw new Error(
+      `Published branding unavailable: HTTP ${icon.status}, ${png.length} bytes`,
+    );
+  const anonymous = await probe('/mcp', 'POST');
+  if (anonymous.status !== 401)
+    throw new Error('MCP must require authentication');
   const health = docker([
     'exec',
     name,
@@ -65,7 +115,11 @@ try {
     '-e',
     "fetch('http://127.0.0.1:3000/healthz').then(async r=>{if(!r.ok)process.exit(1);console.log(await r.text())})",
   ]);
-  process.stdout.write('Docker non-root/read-only health: ' + health + '\n');
+  process.stdout.write(
+    'Docker production/non-root/read-only, branding and OAuth guard: ' +
+      health +
+      '\n',
+  );
 } finally {
   try {
     docker(['stop', name]);

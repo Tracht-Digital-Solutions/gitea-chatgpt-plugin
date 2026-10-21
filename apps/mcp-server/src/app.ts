@@ -1,4 +1,5 @@
 import express from 'express';
+import { resolve } from 'node:path';
 import type { ErrorRequestHandler, Express } from 'express';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import type { Config } from './config/index.js';
@@ -32,7 +33,7 @@ export function createApp(
     res.set({
       'Cache-Control': 'no-store',
       'Content-Security-Policy':
-        "default-src 'none'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'",
+        "default-src 'none'; img-src 'self'; style-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'",
       'X-Content-Type-Options': 'nosniff',
       'Referrer-Policy': 'no-referrer',
       'Strict-Transport-Security': 'max-age=31536000',
@@ -83,6 +84,10 @@ export function createApp(
         bearer_methods_supported: ['header'],
       }),
     );
+  app.use(
+    '/assets',
+    express.static(resolve('plugin/assets'), { dotfiles: 'deny' }),
+  );
   mountPortal(app, config, store, authenticate, request);
   app.post('/mcp', async (req, res) => {
     const header = req.headers.authorization;

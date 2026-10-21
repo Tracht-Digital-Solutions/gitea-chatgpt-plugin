@@ -1,5 +1,9 @@
 # Gitea for ChatGPT
 
+<img src="plugin/assets/icon.png" width="96" height="96" alt="Gitea for ChatGPT: Teetasse mit Git-Branch und Sprechblase">
+
+**Produktionspaket:** Das Release enthält ein eigenständiges `gitea-deployment-VERSION.zip` mit versionsgebundener Docker-Konfiguration und deutscher/englischer Anleitung. [Produktionsinstallation](docs/de/PRODUKTION.md). Der Server läuft mit `NODE_ENV=production`; ein eigenes HTTPS-/OAuth-Deployment ist erforderlich.
+
 [![CI](https://github.com/jtracht/gitea-chatgpt-plugin/actions/workflows/ci.yml/badge.svg)](https://github.com/jtracht/gitea-chatgpt-plugin/actions/workflows/ci.yml)
 [![Security](https://github.com/jtracht/gitea-chatgpt-plugin/actions/workflows/security.yml/badge.svg)](https://github.com/jtracht/gitea-chatgpt-plugin/actions/workflows/security.yml)
 
@@ -40,7 +44,8 @@ cd gitea-chatgpt-plugin
 cp .env.example .env
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 # Schlüssel und die eigenen HTTPS-/OAuth-Adressen in .env eintragen.
-docker compose up -d --build
+docker compose pull
+docker compose up -d --no-build --wait
 ```
 
 Anschließend HTTPS-Reverse-Proxy auf Port 3000 einrichten. Der MCP-Endpunkt lautet `https://<eigener-host>/mcp`, das Browserportal `https://<eigener-host>/portal`. Alle OAuth-Variablen sind Pflicht; es gibt keinen unauthentifizierten Produktionsmodus. [Vollständige Einrichtung, OAuth, Nginx Proxy Manager und Rollback](docs/DEPLOYMENT.md).

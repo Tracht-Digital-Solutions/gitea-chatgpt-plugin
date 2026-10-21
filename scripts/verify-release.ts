@@ -53,6 +53,7 @@ for (const name of [
   'mcp.json',
   'skills/gitea-workflow/SKILL.md',
   'assets/icon.svg',
+  'assets/icon.png',
 ])
   if (!contents[name]) throw new Error('Missing plugin component');
 const manifest = JSON.parse(strFromU8(contents['plugin.json']!)) as {
@@ -60,6 +61,22 @@ const manifest = JSON.parse(strFromU8(contents['plugin.json']!)) as {
 };
 if (manifest.version !== tag.slice(1))
   throw new Error('Plugin version mismatch');
+const deployment = files.get(`gitea-deployment-${tag.slice(1)}.zip`);
+if (!deployment) throw new Error('Missing production deployment ZIP');
+const setup = unzipSync(deployment);
+for (const name of [
+  '.env.example',
+  'docker-compose.yml',
+  'docs/de/PRODUKTION.md',
+  'docs/en/PRODUCTION.md',
+])
+  if (!setup[name]) throw new Error('Missing deployment component: ' + name);
+if (
+  !strFromU8(setup['.env.example']!).includes(
+    'GITEA_MCP_VERSION=' + tag.slice(1) + ' ',
+  )
+)
+  throw new Error('Deployment image version mismatch');
 const digest = strFromU8(
   files.get('container-digest.txt') ?? new Uint8Array(),
 ).trim();

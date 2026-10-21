@@ -26,7 +26,8 @@ For Gitea OAuth, register an application on each chosen instance with callback `
 Private addresses are denied by default. Explicitly allow only required CIDRs using `ALLOWED_PRIVATE_CIDRS`, preferably individual `/32` or `/128` addresses. This is a privileged operator exception and must never be user-controlled.
 
 ```bash
-docker compose up -d --build
+docker compose pull
+docker compose up -d --no-build --wait
 docker compose ps
 docker compose logs --tail=50 mcp
 curl http://127.0.0.1:3000/healthz

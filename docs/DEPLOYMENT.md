@@ -42,8 +42,11 @@ Optional je Gitea-Instanz OAuth-App in Gitea registrieren, Callback `https://<mc
 
 ## 3. Docker Compose
 
+Für den Betrieb ohne Quellcode und lokalen Build verwende das Deployment-ZIP aus dem Release: [Produktionsinstallation](de/PRODUKTION.md). `GITEA_MCP_VERSION` aus `.env.example` wählt die veröffentlichte Imageversion. Der Standard-Compose lädt dieses Image; für einen eigenen Build verwende zusätzlich `docker-compose.build.yml`.
+
 ```bash
-docker compose up -d --build
+docker compose pull
+docker compose up -d --no-build --wait
 docker compose ps
 docker compose logs --tail=50 mcp
 curl http://127.0.0.1:3000/healthz

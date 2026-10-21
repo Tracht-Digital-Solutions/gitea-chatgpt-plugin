@@ -59,6 +59,8 @@ for (const required of [
   'plugin.json',
   'mcp.json',
   'assets/icon.svg',
+  'assets/icon.png',
+  'assets/portal.css',
   'skills/gitea-workflow/SKILL.md',
 ])
   if (!checked[required]) throw new Error('Archive missing ' + required);
@@ -79,3 +81,39 @@ writeFileSync(
 process.stdout.write(
   `Archive inspected: ${Object.keys(checked).length} files, ${statSync('artifacts/' + name).size} bytes.\n`,
 );
+
+const deployment: Record<string, Uint8Array> = {};
+for (const path of [
+  '.env.example',
+  'docker-compose.yml',
+  'LICENSE',
+  'README.md',
+  'plugin/assets/icon.png',
+  'plugin/assets/icon.svg',
+])
+  deployment[path] = new Uint8Array(readFileSync(path));
+function addDocs(dir: string): void {
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    if (entry.isSymbolicLink()) throw new Error('Symlinks are forbidden');
+    const path = dir + '/' + entry.name;
+    if (entry.isDirectory()) {
+      if (entry.name !== 'research') addDocs(path);
+    } else deployment[path] = new Uint8Array(readFileSync(path));
+  }
+}
+addDocs('docs');
+const deployName = 'gitea-deployment-' + version + '.zip';
+const deployArchive = zipSync(deployment, {
+  level: 9,
+  mtime: new Date('2026-01-01T00:00:00Z'),
+});
+writeFileSync('artifacts/' + deployName, deployArchive);
+writeFileSync(
+  'artifacts/SHA256SUMS',
+  readFileSync('artifacts/SHA256SUMS', 'utf8') +
+    createHash('sha256').update(deployArchive).digest('hex') +
+    '  ' +
+    deployName +
+    '\n',
+);
+process.stdout.write(`Production deployment ZIP: ${deployName}.\n`);

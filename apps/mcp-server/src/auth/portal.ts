@@ -37,11 +37,11 @@ function page(res: Response, title: string, body: string): void {
     .send(
       '<!doctype html><html lang="de"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>' +
         escape(title) +
-        '</title><body><h1>' +
+        '</title><link rel="icon" type="image/png" href="/assets/icon.png"><link rel="stylesheet" href="/assets/portal.css"><body><header><img src="/assets/icon.png" alt="" width="48" height="48"><span>Gitea for ChatGPT</span></header><main><h1>' +
         escape(title) +
         '</h1>' +
         body +
-        '</body></html>',
+        '</main></body></html>',
     );
 }
 type Session = { identity: Identity; csrf: string; expires: number };

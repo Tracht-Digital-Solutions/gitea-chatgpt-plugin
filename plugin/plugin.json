@@ -21,7 +21,7 @@
           "Write"
         ],
         "defaultPrompt": "List my connected Gitea repositories.",
-        "logo": "./assets/icon.svg"
+        "logo": "./assets/icon.png"
       }
     }
   }

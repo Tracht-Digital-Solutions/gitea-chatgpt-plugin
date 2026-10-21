@@ -9,6 +9,8 @@
     "node": ">=24 <25"
   },
   "scripts": {
+    "branding": "tsx scripts/branding.ts",
+    "branding:check": "tsx scripts/branding.ts --check",
     "dev": "tsx watch apps/mcp-server/src/index.ts",
     "start": "node dist/apps/mcp-server/src/index.js",
     "build": "tsc -p tsconfig.build.json",
@@ -20,7 +22,8 @@
     "test:coverage": "vitest run --coverage",
     "test:e2e": "tsx scripts/e2e.ts",
     "test:docker": "tsx scripts/docker-smoke.ts",
-    "validate": "tsx scripts/validate.ts",
+    "test:deployment": "tsx scripts/deployment-smoke.ts",
+    "validate": "pnpm branding:check && tsx scripts/validate.ts",
     "package": "tsx scripts/package.ts",
     "check": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm test:coverage && pnpm validate && pnpm build"
   },
@@ -34,6 +37,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@resvg/resvg-js": "2.6.2",
     "@types/express": "^5.0.6",
     "@types/node": "^24.19.2",
     "@types/supertest": "^7.2.1",
