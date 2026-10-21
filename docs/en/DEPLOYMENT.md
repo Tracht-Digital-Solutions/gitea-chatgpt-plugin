@@ -1,5 +1,7 @@
 # Deployment
 
+For initial setup, use the [complete step-by-step guide](STEP-BY-STEP.md), including checkpoints from server installation to the first approved write.
+
 Provide an HTTPS MCP origin and a trusted OAuth/OIDC provider (for example self-hosted Keycloak). Keep Gitea independently deployed. Example domains in this repository are placeholders, not running services.
 
 ## OAuth provider

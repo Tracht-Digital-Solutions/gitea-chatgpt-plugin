@@ -1,5 +1,7 @@
 # Plugin installieren und abnehmen
 
+Beginne mit der [ausführlichen Schritt-für-Schritt-Anleitung](SCHRITT-FUER-SCHRITT.md). Sie enthält die vollständige Ersteinrichtung mit Docker, OAuth/Keycloak, HTTPS, Gitea sowie ChatGPT/Codex. Die folgende Liste dient als kurze Abnahmeübersicht.
+
 1. [Deployment](../DEPLOYMENT.md) abschließen und einen eigenen HTTPS-Endpunkt mit OAuth bereitstellen.
 2. Browserportal öffnen, eigenen Benutzer anmelden, Gitea-OAuth oder PAT im Passwortfeld einrichten. Niemals Zugangsdaten in Chatnachrichten schreiben.
 3. In ChatGPT unter **Plugins → + → Add custom MCP server** den Endpunkt `https://<host>/mcp` eintragen. OAuth verwenden, Client-ID `gitea-chatgpt` beziehungsweise den selbst registrierten Client wählen. Tatsächlich angezeigten Callback beim eigenen Anbieter registrieren. Discovery liefert Issuer/Scopes. Falls der Client separate Autorisierungs-/Token-URLs verlangt, die Werte aus dessen offizieller Discovery übernehmen.

@@ -5,6 +5,8 @@
 
 **Deutsch** · [English](docs/en/README.md)
 
+**Installation und Einrichtung:** [Schritt-für-Schritt-Anleitung](docs/de/SCHRITT-FUER-SCHRITT.md) mit Docker, OAuth/Keycloak, HTTPS, Gitea-Verbindung, ChatGPT/Codex und Fehlerbehebung.
+
 Ein selbst hostbarer MCP-Server mit portablem Agent-Plugins-Paket für die Verwaltung eigener Gitea-Instanzen aus ChatGPT und kompatiblen Codex-Clients. Kein kostenpflichtiger Cloud-Dienst erforderlich. Unabhängiges Communityprojekt, keine offizielle OpenAI- oder Gitea-Erweiterung.
 
 **Entwicklungsstand:** Die Reihe 0.1.x besteht aus frühen Entwicklungsreleases. [Nachweise und offene Abnahmen](docs/PROGRESS.md) sind verbindlich; die echte ChatGPT-Kontoverbindung und eine Aufnahme ins öffentliche Plugin-Verzeichnis sind noch nicht verifiziert. Das Paket enthält eine konfigurierbare HTTPS-Vorlage und keinen von diesem Projekt betriebenen Dienst.
