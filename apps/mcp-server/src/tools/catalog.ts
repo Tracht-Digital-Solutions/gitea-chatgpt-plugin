@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { publicServerUrl } from '../security/public-server.js';
 import type { ApiRequest } from '../gitea/client.js';
 import { registerManagementTools } from './management.js';
 import { registerPublishingTools } from './publishing.js';
@@ -129,8 +130,8 @@ add(
 );
 add(
   'connection_setup',
-  'Get the secure browser setup URL. Never provide credentials in chat.',
-  {},
+  'Set up your own Gitea server from ChatGPT: get a secure sign-in link, optionally prefilled with its public HTTPS address. Never provide credentials in chat.',
+  { serverUrl: publicServerUrl.optional() },
 );
 add(
   'select_instance',

@@ -38,6 +38,8 @@ Node.js 24 LTS und pnpm 11.25.0 für Entwicklung, alternativ Docker/Compose; ein
 
 ## Installation mit Docker
 
+**Du möchtest das Plugin in ChatGPT einrichten?** Nutze die [ChatGPT-Einrichtung](docs/de/CHATGPT-EINRICHTUNG.md): Plugin installieren, „Richte meinen Gitea-Server ein“ schreiben, eigenen Server im geschützten Dialog verbinden und zu ChatGPT zurückkehren. Endnutzer benötigen weder Docker noch `.env`. Der folgende Abschnitt richtet sich ausschließlich an Betreiber des gemeinsamen MCP-Dienstes. Ein produktiver MCP-Endpunkt dieses Projekts ist noch nicht bereitgestellt.
+
 ```bash
 git clone https://github.com/jtracht/gitea-chatgpt-plugin.git
 cd gitea-chatgpt-plugin
@@ -52,7 +54,7 @@ Anschließend HTTPS-Reverse-Proxy auf Port 3000 einrichten. Der MCP-Endpunkt lau
 
 ## Gitea verbinden
 
-1. **Eigenen Gitea-Server einrichten:** Es ist kein Gitea-Server vorkonfiguriert (`GITEA_INSTANCES=[]`). Trage in deiner lokalen `.env` die HTTPS-Adresse deines eigenen Servers ein, z. B. `GITEA_INSTANCES=[{"id":"mein-server","url":"https://DEIN-GITEA-HOST"}]`, und starte den MCP-Server neu. Ersetze den Platzhalter durch deinen tatsächlichen Host; mehrere Server sind möglich.
+1. Im installierten Plugin „Richte meinen Gitea-Server ein“ schreiben. `connection_setup` liefert den geschützten Einrichtungslink, optional mit deiner öffentlichen HTTPS-Adresse vorausgefüllt. Bei der Vorgabe `ALLOW_USER_SERVERS=true` ist dafür kein Betreiber-Eintrag in `GITEA_INSTANCES` nötig. Interne Server konfiguriert ausschließlich der Betreiber.
 2. Browserportal öffnen und beim eigenen OAuth-Anbieter anmelden.
 3. Gitea-OAuth nutzen, falls für diese Instanz eingerichtet; alternativ ein möglichst eng berechtigtes persönliches Access-Token ausschließlich im Passwortfeld des Portals eingeben.
 4. `list_instances`, `connection_status` und `list_repositories` testen.

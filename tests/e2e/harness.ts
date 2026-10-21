@@ -6,12 +6,18 @@ import { Store } from '../../apps/mcp-server/src/security/store.js';
 import type { Requester } from '../../apps/mcp-server/src/security/network.js';
 import { config, identity } from '../helpers.js';
 
-export async function realHarness() {
+export async function realHarness(selfService = false) {
   const url = process.env.GITEA_E2E_URL,
     token = process.env.GITEA_E2E_TOKEN;
   if (!url?.startsWith('http://127.0.0.1:') || !token)
     throw Error('Disposable loopback Gitea required');
   const request: Requester = async (target, method, headers, body) => {
+    if (selfService && target.hostname === 'auth.example.org')
+      return {
+        status: 200,
+        headers: {},
+        body: JSON.stringify({ access_token: 'fixture-access' }),
+      };
     const result = await fetch(new URL(target.pathname + target.search, url), {
       method,
       headers,
@@ -27,10 +33,11 @@ export async function realHarness() {
   };
   const store = new Store(':memory:', config.encryptionKey);
   store.connect(identity.owner, 'alpha', JSON.stringify({ token }));
-  const testConfig = { ...config };
+  const testConfig = { ...config, allowUserServers: selfService };
   const { app } = createApp(testConfig, store, {
     authenticate: async () => identity,
     request,
+    ...(selfService ? { customRequest: request } : {}),
   });
   const server = app.listen(0, '127.0.0.1');
   await new Promise<void>((r) => server.once('listening', r));
@@ -56,6 +63,9 @@ export async function realHarness() {
     return { ...args, approvalId: staged.approvalId };
   };
   return {
+    app,
+    store,
+    testConfig,
     call,
     write: async (name: string, args: Record<string, unknown>) =>
       call(name, await approved(name, args)),

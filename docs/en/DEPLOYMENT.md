@@ -19,7 +19,7 @@ In Keycloak, create an OIDC realm, Standard Flow clients, S256-PKCE, client scop
 
 ## Configure and start
 
-Copy `.env.example` to `.env`; generate a random 32-byte hex encryption key. Set every OAuth URL and client ID, `PUBLIC_URL` (HTTPS origin only), `OAUTH_AUDIENCE`, allowed Gitea instances and database location. Keep configuration/secrets outside Git and restrict file access. `GITEA_INSTANCES` is a JSON array of `{ "id": "work", "url": "https://git.example.org" }`; subpath installations are supported. Users connect only operator-approved instances. Add instances by updating this configuration and restarting.
+Copy `.env.example` to `.env`; generate a random 32-byte hex encryption key. Set every OAuth URL and client ID, `PUBLIC_URL` (HTTPS origin only), `OAUTH_AUDIENCE`, allowed Gitea instances and database location. Keep configuration/secrets outside Git and restrict file access. `GITEA_INSTANCES` is a JSON array of `{ "id": "work", "url": "https://git.example.org" }`; subpath installations are supported. With default `ALLOW_USER_SERVERS=true`, users can connect public HTTPS servers through the ChatGPT setup link without editing this list. Setting it to `false` restricts connections to configured instances. Only configured instances can use operator private-CIDR exceptions; these never apply to self-service URLs.
 
 For Gitea OAuth, register an application on each chosen instance with callback `https://<mcp-host>/gitea/callback` and PKCE, then set `oauthClientId` and optional `oauthClientSecret` on that instance using operator secrets. Otherwise use narrowly scoped Gitea PATs in the browser portal. Grant only required user/repository/issue read/write scopes. Never grant admin or runner access by default.
 

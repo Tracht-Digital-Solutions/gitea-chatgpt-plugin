@@ -16,7 +16,11 @@ import { createMcpServer } from './mcp/server.js';
 export function createApp(
   config: Config,
   store: Store,
-  overrides: { authenticate?: Authenticator; request?: Requester } = {},
+  overrides: {
+    authenticate?: Authenticator;
+    request?: Requester;
+    customRequest?: Requester;
+  } = {},
 ): { app: Express; service: ToolService } {
   const app = express();
   app.disable('x-powered-by');
@@ -27,7 +31,12 @@ export function createApp(
       [...config.instances.map((i) => i.url), config.tokenUrl],
       config.privateCidrs,
     );
-  const service = new ToolService(config, store, request);
+  const service = new ToolService(
+    config,
+    store,
+    request,
+    overrides.customRequest,
+  );
   const limits = new RateLimiter(240);
   app.use((req, res, next) => {
     res.set({
@@ -88,7 +97,14 @@ export function createApp(
     '/assets',
     express.static(resolve('plugin/assets'), { dotfiles: 'deny' }),
   );
-  mountPortal(app, config, store, authenticate, request);
+  mountPortal(
+    app,
+    config,
+    store,
+    authenticate,
+    request,
+    overrides.customRequest,
+  );
   app.post('/mcp', async (req, res) => {
     const header = req.headers.authorization;
     if (!header?.startsWith('Bearer ')) {

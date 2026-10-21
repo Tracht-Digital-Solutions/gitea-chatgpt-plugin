@@ -93,7 +93,7 @@ Die Redirect URI trägst du **erst anhand der tatsächlich angezeigten Callback-
 
 ## 7. `.env` erstellen und ausfüllen
 
-Die mitgelieferte Konfiguration enthält keinen Gitea-Server: `GITEA_INSTANCES=[]`. Trage im folgenden Beispiel die HTTPS-Adresse deines eigenen Gitea-Servers ein. Die Beispielhosts in dieser Anleitung sind ausschließlich zu ersetzende Platzhalter und werden nicht automatisch verbunden. Bei leerer Liste startet der Dienst mit einem Einrichtungshinweis im Portal.
+Die mitgelieferte Konfiguration enthält keinen Gitea-Server: `GITEA_INSTANCES=[]`. Trage im folgenden Beispiel die HTTPS-Adresse deines eigenen Gitea-Servers ein. Die Beispielhosts in dieser Anleitung sind ausschließlich zu ersetzende Platzhalter und werden nicht automatisch verbunden. Bei leerer Liste und `ALLOW_USER_SERVERS=true` können Nutzer ihren öffentlichen HTTPS-Gitea-Server über den aus ChatGPT gelieferten Einrichtungslink selbst verbinden. Nur interne oder vorkonfigurierte Instanzen benötigen einen festen Eintrag.
 
 ```bash
 umask 077

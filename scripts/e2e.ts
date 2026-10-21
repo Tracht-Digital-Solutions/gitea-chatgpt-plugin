@@ -145,6 +145,7 @@ try {
       'tests/e2e/publishing.test.ts',
       'tests/e2e/actions.test.ts',
       'tests/e2e/projects.test.ts',
+      'tests/e2e/setup.test.ts',
     ],
     {
       stdio: 'inherit',

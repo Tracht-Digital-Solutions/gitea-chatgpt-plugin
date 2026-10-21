@@ -95,6 +95,7 @@ export class Store {
     revision: string;
     refreshToken?: string;
     expiresAt?: number;
+    customUrl?: string;
   } {
     const selected =
       instance ??
@@ -108,7 +109,12 @@ export class Store {
     if (!row) throw new SafeError('CONNECTION_REQUIRED', 404);
     const secret = JSON.parse(
       this.open(owner, selected!, row.secret as string),
-    ) as { token: string; expiresAt?: number; refreshToken?: string };
+    ) as {
+      token: string;
+      expiresAt?: number;
+      refreshToken?: string;
+      customUrl?: string;
+    };
     if (!allowExpired && secret.expiresAt && secret.expiresAt <= Date.now())
       throw new SafeError('GITEA_TOKEN_EXPIRED_RECONNECT', 401);
     return { instance: selected!, ...secret, revision: row.revision as string };
