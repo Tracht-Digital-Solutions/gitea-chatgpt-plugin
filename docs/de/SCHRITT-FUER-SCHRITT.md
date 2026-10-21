@@ -1,6 +1,6 @@
 # Schritt für Schritt: installieren, einrichten und testen
 
-[English](../en/STEP-BY-STEP.md) · Stand: 21.10.2026 · Software: v0.1.1.
+[English](../en/STEP-BY-STEP.md) · Stand: 21.10.2026 · Software: v0.2.0.
 
 Diese Anleitung führt vom eigenen Server bis zum ersten freigegebenen Schreibauftrag. Die Befehle verwenden eine Linux-Shell. Es wird kein öffentlicher MCP-Dienst bereitgestellt. HTTPS-Deployment und die Verbindung in deinem tatsächlichen ChatGPT-/Codex-Konto sind noch nicht projektseitig verifiziert; die nachfolgenden Kontrollpunkte sind von dir auf deinem System auszuführen.
 
@@ -32,7 +32,7 @@ Lege DNS-Einträge und Zertifikate für deine tatsächlichen Hosts an. Ein öffe
 ```bash
 git clone https://github.com/jtracht/gitea-chatgpt-plugin.git
 cd gitea-chatgpt-plugin
-git switch --detach v0.1.1
+git switch --detach v0.2.0
 docker version
 docker compose version
 ```
@@ -207,9 +207,11 @@ Führe nacheinander diese Aufträge aus:
 
 Agenten dürfen die Browserfreigabe nicht stellvertretend anklicken. Dateiänderungen benötigen einen Feature-Branch; direktes Schreiben auf den Standardbranch wird verweigert.
 
+Ab v0.2.0 kannst du zusätzlich [Actions steuern, Kanban-Projekte verwalten und Zeiten erfassen](PROJEKTE-ACTIONS-ZEIT.md). Die dortige Anleitung erklärt die benötigten Rechte, Projekt-/Issue-IDs, Beispiele und gesonderten Schreibfreigaben.
+
 ## 13. Optional: portables Paket oder Codex
 
-Das [Release-ZIP](https://github.com/jtracht/gitea-chatgpt-plugin/releases/tag/v0.1.1) enthält eine HTTPS-URL-Vorlage. Unterstützt dein Client diese Vorlage nicht, erstelle ein Paket für deinen eigenen Endpunkt:
+Das [Release-ZIP](https://github.com/jtracht/gitea-chatgpt-plugin/releases/tag/v0.2.0) enthält eine HTTPS-URL-Vorlage. Unterstützt dein Client diese Vorlage nicht, erstelle ein Paket für deinen eigenen Endpunkt:
 
 ```bash
 pnpm install --frozen-lockfile

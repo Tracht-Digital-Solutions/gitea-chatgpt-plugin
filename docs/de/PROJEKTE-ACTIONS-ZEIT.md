@@ -1,6 +1,6 @@
 # Actions, Projekte/Kanban und Zeiterfassung
 
-[English](../en/PROJECTS-ACTIONS-TIME.md). Implementiert im Hauptbranch; die neuen Funktionen sind im bisherigen Release v0.1.1 noch nicht enthalten. Die aktuelle [Gitea-28-API](https://docs.gitea.com/api/) und die [offizielle Spezifikation](https://docs.gitea.com/openapi3-28.json) beschreiben die verwendeten Endpunkte. Ältere oder eingeschränkte Instanzen können Funktionen verweigern.
+[English](../en/PROJECTS-ACTIONS-TIME.md). Verfügbar ab v0.2.0; im vorherigen Release v0.1.1 noch nicht enthalten. Die aktuelle [Gitea-28-API](https://docs.gitea.com/api/) und die [offizielle Spezifikation](https://docs.gitea.com/openapi3-28.json) beschreiben die verwendeten Endpunkte. Ältere oder eingeschränkte Instanzen können Funktionen verweigern.
 
 ## Sicherheit und Einrichtung
 

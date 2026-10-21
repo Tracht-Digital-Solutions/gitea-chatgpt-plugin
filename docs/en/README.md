@@ -1,6 +1,6 @@
 # Gitea for ChatGPT
 
-[Deutsch](../../README.md) · Apache-2.0 · Early development releases in the 0.1.x series.
+[Deutsch](../../README.md) · Apache-2.0 · Early development releases in the 0.x series.
 
 **Installation and setup:** [Step-by-step guide](STEP-BY-STEP.md) covering Docker, OAuth/Keycloak, HTTPS, Gitea connections, ChatGPT/Codex, and troubleshooting.
 
@@ -8,7 +8,7 @@ A self-hosted Node.js 24/TypeScript MCP server and portable Agent Plugins packag
 
 ## Install
 
-New on main: [Actions control, projects/Kanban, and time tracking](PROJECTS-ACTIONS-TIME.md), with exact browser approval for mutations. These additions are not included in v0.1.1.
+Available from v0.2.0: [Actions control, projects/Kanban, and time tracking](PROJECTS-ACTIONS-TIME.md), with exact browser approval for mutations.
 
 ```bash
 git clone https://github.com/jtracht/gitea-chatgpt-plugin.git

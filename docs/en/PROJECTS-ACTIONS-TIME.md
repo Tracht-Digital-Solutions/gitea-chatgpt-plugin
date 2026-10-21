@@ -1,6 +1,6 @@
 # Actions, projects/Kanban, and time tracking
 
-[Deutsch](../de/PROJEKTE-ACTIONS-ZEIT.md). Implemented on main; these tools are not part of the previous v0.1.1 release. The current [Gitea 28 API](https://docs.gitea.com/api/) and [official specification](https://docs.gitea.com/openapi3-28.json) document the endpoints. Older or restricted instances may reject operations.
+[Deutsch](../de/PROJEKTE-ACTIONS-ZEIT.md). Available from v0.2.0; these tools are not part of the previous v0.1.1 release. The current [Gitea 28 API](https://docs.gitea.com/api/) and [official specification](https://docs.gitea.com/openapi3-28.json) document the endpoints. Older or restricted instances may reject operations.
 
 ## Setup and approval
 

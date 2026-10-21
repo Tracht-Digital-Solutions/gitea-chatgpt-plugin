@@ -9,7 +9,7 @@
 
 Ein selbst hostbarer MCP-Server mit portablem Agent-Plugins-Paket für die Verwaltung eigener Gitea-Instanzen aus ChatGPT und kompatiblen Codex-Clients. Kein kostenpflichtiger Cloud-Dienst erforderlich. Unabhängiges Communityprojekt, keine offizielle OpenAI- oder Gitea-Erweiterung.
 
-**Entwicklungsstand:** Die Reihe 0.1.x besteht aus frühen Entwicklungsreleases. [Nachweise und offene Abnahmen](docs/PROGRESS.md) sind verbindlich; die echte ChatGPT-Kontoverbindung und eine Aufnahme ins öffentliche Plugin-Verzeichnis sind noch nicht verifiziert. Das Paket enthält eine konfigurierbare HTTPS-Vorlage und keinen von diesem Projekt betriebenen Dienst.
+**Entwicklungsstand:** Die 0.x-Reihe besteht aus frühen Entwicklungsreleases. [Nachweise und offene Abnahmen](docs/PROGRESS.md) sind verbindlich; die echte ChatGPT-Kontoverbindung und eine Aufnahme ins öffentliche Plugin-Verzeichnis sind noch nicht verifiziert. Das Paket enthält eine konfigurierbare HTTPS-Vorlage und keinen von diesem Projekt betriebenen Dienst.
 
 ## Funktionen
 
@@ -21,7 +21,7 @@ Ein selbst hostbarer MCP-Server mit portablem Agent-Plugins-Paket für die Verwa
 - Pull Requests, Diffs, Dateien, Reviews und ausdrücklich freigegebene Merges mit Head-SHA-Prüfung.
 - Releases und Tags mit separater Freigabe; Actions lesen, Workflows starten/aktivieren/deaktivieren, Läufe oder Jobs wiederholen und Läufe abbrechen.
 - Repository-, Organisations- und Benutzerprojekte mit Kanban-Spalten und Issue-Karten erstellen, bearbeiten, sortieren und verschieben.
-- Zeiten pro Issue buchen/lesen/löschen und eigene Stoppuhren starten, stoppen oder verwerfen. [Einrichtung, Beispiele und Grenzen dieser Erweiterungen](docs/de/PROJEKTE-ACTIONS-ZEIT.md); noch nicht in v0.1.1 enthalten.
+- Zeiten pro Issue buchen/lesen/löschen und eigene Stoppuhren starten, stoppen oder verwerfen. [Einrichtung, Beispiele und Grenzen dieser Erweiterungen](docs/de/PROJEKTE-ACTIONS-ZEIT.md); verfügbar ab v0.2.0.
 - Keine öffentlichen Administrations-, Runner-, Webhook- oder Rechteänderungstools.
 
 Alle Funktionen sind ohne ChatGPT-App-UI nutzbar. Die sichere Einrichtung und menschliche Schreibfreigabe erfolgen bewusst in einem eigenen Browserportal.

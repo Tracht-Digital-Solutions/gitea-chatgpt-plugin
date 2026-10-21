@@ -1,6 +1,6 @@
 # Step by step: install, configure, and test
 
-[Deutsch](../de/SCHRITT-FUER-SCHRITT.md) · Updated: 2026-10-21 · Software: v0.1.1.
+[Deutsch](../de/SCHRITT-FUER-SCHRITT.md) · Updated: 2026-10-21 · Software: v0.2.0.
 
 This guide takes you from your own server to your first approved write operation. Commands use a Linux shell. The project does not provide a hosted MCP service. Production HTTPS/OAuth deployment and installation in a real ChatGPT/Codex account remain unverified; run the checkpoints below on your own system.
 
@@ -27,7 +27,7 @@ Create DNS records and certificates for your actual hosts. ChatGPT must be able 
 ```bash
 git clone https://github.com/jtracht/gitea-chatgpt-plugin.git
 cd gitea-chatgpt-plugin
-git switch --detach v0.1.1
+git switch --detach v0.2.0
 docker version
 docker compose version
 ```
@@ -202,9 +202,11 @@ Run these requests in sequence:
 
 Agents must not click browser approval on your behalf. File changes require a feature branch; writes to the default branch are refused.
 
+From v0.2.0, also follow the [Actions, Kanban projects, and time tracking guide](PROJECTS-ACTIONS-TIME.md) for permissions, project/issue IDs, examples, and separate write approvals.
+
 ## 13. Optional: portable package or Codex
 
-The [release ZIP](https://github.com/jtracht/gitea-chatgpt-plugin/releases/tag/v0.1.1) contains an HTTPS URL template. If your client cannot resolve it, build a package for your endpoint:
+The [release ZIP](https://github.com/jtracht/gitea-chatgpt-plugin/releases/tag/v0.2.0) contains an HTTPS URL template. If your client cannot resolve it, build a package for your endpoint:
 
 ```bash
 pnpm install --frozen-lockfile
