@@ -1,0 +1,76 @@
+name: Release
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      bootstrap:
+        description: Create initial v0.1.0 after all quality/security gates
+        type: boolean
+        default: false
+permissions:
+  contents: read
+jobs:
+  quality:
+    uses: ./.github/workflows/ci.yml
+  security:
+    uses: ./.github/workflows/security.yml
+    permissions:
+      contents: read
+      security-events: write
+  release:
+    needs: [quality, security]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
+    outputs:
+      created: ${{ steps.release.outputs.release_created || steps.bootstrap.outputs.created }}
+      tag: ${{ steps.release.outputs.tag_name || steps.bootstrap.outputs.tag }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - id: bootstrap
+        if: inputs.bootstrap == true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          COMMIT: ${{ github.sha }}
+        run: |
+          test "$(node -p "require('./package.json').version")" = "0.1.0"
+          gh release create v0.1.0 --target "$COMMIT" --title "v0.1.0" --notes-file docs/RELEASE-v0.1.0.md --prerelease
+          echo "created=true" >> "$GITHUB_OUTPUT"
+          echo "tag=v0.1.0" >> "$GITHUB_OUTPUT"
+      - id: release
+        if: inputs.bootstrap != true
+        uses: googleapis/release-please-action@8b8fd2cc23b2e18957157a9d923d75aa0c6f6ad5 # v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+      - name: Dispatch checks for release PRs created using GITHUB_TOKEN
+        if: steps.release.outputs.prs_created == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          PRS: ${{ steps.release.outputs.prs }}
+        run: |
+          node -e 'for (const pr of JSON.parse(process.env.PRS)) console.log(pr.headBranchName)' > /tmp/release-branches
+          while IFS= read -r branch; do
+            gh workflow run ci.yml --ref "$branch"
+            gh workflow run security.yml --ref "$branch"
+          done < /tmp/release-branches
+  publish:
+    needs: release
+    if: needs.release.outputs.created == 'true'
+    uses: ./.github/workflows/publish.yml
+    with:
+      tag: ${{ needs.release.outputs.tag }}
+    permissions:
+      contents: write
+      packages: write
+    secrets: inherit

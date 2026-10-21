@@ -1,0 +1,14 @@
+name: Fehler / Bug
+description: Reproduzierbaren Fehler melden / Report a reproducible bug
+body:
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Verhalten und Reproduktion / Behavior and reproduction
+      description: Keine Tokens, privaten Repositoryinhalte oder personenbezogenen Daten veröffentlichen.
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Plugin-, Node- und Gitea-Versionen / Versions
