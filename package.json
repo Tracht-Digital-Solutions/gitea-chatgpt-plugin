@@ -1,0 +1,51 @@
+{
+  "name": "gitea-chatgpt-plugin",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0",
+  "packageManager": "pnpm@11.25.0",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "dev": "tsx watch apps/mcp-server/src/index.ts",
+    "start": "node dist/apps/mcp-server/src/index.js",
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "tsx scripts/e2e.ts",
+    "test:docker": "tsx scripts/docker-smoke.ts",
+    "validate": "tsx scripts/validate.ts",
+    "package": "tsx scripts/package.ts",
+    "check": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm test:coverage && pnpm validate && pnpm build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.1",
+    "express": "5.3.0",
+    "ipaddr.js": "^2.5.0",
+    "jose": "6.2.13",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/express": "^5.0.6",
+    "@types/node": "^24.19.2",
+    "@types/supertest": "^7.2.1",
+    "@vitest/coverage-v8": "5.0.5",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
+    "eslint": "^10.13.0",
+    "fflate": "^0.8.3",
+    "prettier": "^3.9.10",
+    "supertest": "^7.3.1",
+    "tsx": "^4.23.15",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.72.0",
+    "vitest": "5.0.5"
+  }
+}

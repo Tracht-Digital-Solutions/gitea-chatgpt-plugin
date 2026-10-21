@@ -1,0 +1,101 @@
+import { execFileSync, spawnSync } from 'node:child_process';
+import { randomBytes } from 'node:crypto';
+const name = 'gitea-chatgpt-e2e-' + randomBytes(5).toString('hex');
+const image =
+  'gitea/gitea@sha256:30777c91280d973fa02be48b1ade735bd6859e8f6f7af3b4444d519437852504';
+const docker = (args: string[]) =>
+  execFileSync('docker', args, {
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+  }).trim();
+try {
+  docker([
+    'run',
+    '--detach',
+    '--rm',
+    '--name',
+    name,
+    '-p',
+    '127.0.0.1::3000',
+    '-e',
+    'GITEA__security__INSTALL_LOCK=true',
+    '-e',
+    'GITEA__database__DB_TYPE=sqlite3',
+    '-e',
+    'GITEA__service__DISABLE_REGISTRATION=true',
+    image,
+  ]);
+  const port = docker(['port', name, '3000/tcp']).split(':').at(-1)!;
+  const url = 'http://127.0.0.1:' + port;
+  let ready = false;
+  for (let i = 0; i < 90; i++) {
+    try {
+      if ((await fetch(url + '/api/v1/version')).ok) {
+        ready = true;
+        break;
+      }
+    } catch {
+      /* isolated server is starting */
+    }
+    await new Promise((r) => setTimeout(r, 1000));
+  }
+  if (!ready) throw new Error('Isolated Gitea did not start');
+  const version = (await (
+    await fetch(url + '/api/v1/version')
+  ).json()) as unknown;
+  process.stdout.write('Isolated Gitea: ' + JSON.stringify(version) + '\n');
+  docker([
+    'exec',
+    '--user',
+    'git',
+    name,
+    'gitea',
+    '--config',
+    '/data/gitea/conf/app.ini',
+    'admin',
+    'user',
+    'create',
+    '--username',
+    'e2e',
+    '--password',
+    randomBytes(24).toString('hex'),
+    '--email',
+    'e2e@example.invalid',
+    '--admin',
+    '--must-change-password=false',
+  ]);
+  const token = docker([
+    'exec',
+    '--user',
+    'git',
+    name,
+    'gitea',
+    '--config',
+    '/data/gitea/conf/app.ini',
+    'admin',
+    'user',
+    'generate-access-token',
+    '--username',
+    'e2e',
+    '--token-name',
+    'integration',
+    '--scopes',
+    'all',
+    '--raw',
+  ]);
+  const result = spawnSync(
+    process.execPath,
+    ['node_modules/vitest/vitest.mjs', 'run', 'tests/e2e/gitea.test.ts'],
+    {
+      stdio: 'inherit',
+      env: { ...process.env, GITEA_E2E_URL: url, GITEA_E2E_TOKEN: token },
+    },
+  );
+  if (result.status !== 0) process.exitCode = 1;
+} finally {
+  try {
+    docker(['stop', name]);
+  } catch {
+    process.stderr.write('Container cleanup failed: ' + name + '\n');
+  }
+}
