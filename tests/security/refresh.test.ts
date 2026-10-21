@@ -3,6 +3,56 @@ import { ToolService } from '../../apps/mcp-server/src/tools/service.js';
 import { Store } from '../../apps/mcp-server/src/security/store.js';
 import { config, identity, response } from '../helpers.js';
 describe('Gitea refresh token rotation', () => {
+  it('refuses to erase replacement credentials when an earlier refresh fails', async () => {
+    const store = new Store(':memory:', config.encryptionKey);
+    store.connect(
+      identity.owner,
+      'beta',
+      JSON.stringify({ token: 'old', refreshToken: 'r', expiresAt: 1 }),
+    );
+    const service = new ToolService(config, store, async () => {
+      store.connect(
+        identity.owner,
+        'beta',
+        JSON.stringify({ token: 'replacement' }),
+      );
+      return response({}, 401);
+    });
+    await expect(
+      service.execute(identity, 'get_authenticated_user', {}),
+    ).rejects.toThrow('CONNECTION_CHANGED_RECONNECT');
+    expect(store.connection(identity.owner).token).toBe('replacement');
+    store.close();
+  });
+  it('requires OAuth configuration and rejects non-JSON refresh responses', async () => {
+    const store = new Store(':memory:', config.encryptionKey);
+    store.connect(
+      identity.owner,
+      'alpha',
+      JSON.stringify({ token: 'old', refreshToken: 'r', expiresAt: 1 }),
+    );
+    await expect(
+      new ToolService(config, store, async () => response({})).execute(
+        identity,
+        'get_authenticated_user',
+        {},
+      ),
+    ).rejects.toThrow('OAUTH_NOT_CONFIGURED');
+    store.connect(
+      identity.owner,
+      'beta',
+      JSON.stringify({ token: 'old', refreshToken: 'r', expiresAt: 1 }),
+    );
+    await expect(
+      new ToolService(config, store, async () => ({
+        status: 200,
+        headers: {},
+        body: 'not-json',
+      })).execute(identity, 'get_authenticated_user', {}),
+    ).rejects.toThrow('REFRESH_FAILED_RECONNECT');
+    expect(store.list(identity.owner)).not.toContain('beta');
+    store.close();
+  });
   it('serializes concurrent refreshes and invalidates earlier approval revisions', async () => {
     const store = new Store(':memory:', config.encryptionKey);
     store.connect(

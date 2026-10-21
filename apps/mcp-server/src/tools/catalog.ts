@@ -218,7 +218,7 @@ add(
   { ...repo, sha: ref, recursive: z.boolean().default(false), ...pagination },
   (p) => ({
     path: root(p) + '/git/trees/' + enc(p.sha),
-    query: pick(p, ['recursive', 'page', 'limit']),
+    query: { recursive: p.recursive, page: p.page, per_page: p.limit },
   }),
 );
 add(

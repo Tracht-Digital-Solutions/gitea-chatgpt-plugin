@@ -8,6 +8,7 @@ import { secureRequester, type Requester } from './security/network.js';
 import { SafeError, safeCode } from './security/errors.js';
 import { Store } from './security/store.js';
 import { RateLimiter } from './security/limits.js';
+import { rateLimit } from 'express-rate-limit';
 import { ToolService } from './tools/service.js';
 import { createMcpServer } from './mcp/server.js';
 
@@ -56,6 +57,15 @@ export function createApp(
     }
   });
   app.use(express.json({ limit: '1500kb' }));
+  app.use(
+    rateLimit({
+      windowMs: 60000,
+      limit: 240,
+      standardHeaders: 'draft-8',
+      legacyHeaders: false,
+      message: { error: 'RATE_LIMITED' },
+    }),
+  );
   app.use(express.urlencoded({ extended: false, limit: '1500kb' }));
   app.get('/healthz', (_req, res) => {
     store.db.prepare('SELECT 1').get();

@@ -272,9 +272,21 @@ export class ToolService {
         ...(i.oauthClientSecret ? { client_secret: i.oauthClientSecret } : {}),
       }).toString(),
     );
+    // Never change a connection replaced or disconnected during the upstream request.
+    if (
+      this.store.connection(owner, current.instance, true).revision !==
+      current.revision
+    )
+      throw new SafeError('CONNECTION_CHANGED_RECONNECT', 409);
     if (result.status !== 200) {
       this.store.disconnect(owner, current.instance);
       throw new SafeError('GITEA_REFRESH_FAILED_RECONNECT', 401);
+    }
+    let decoded: unknown;
+    try {
+      decoded = JSON.parse(result.body) as unknown;
+    } catch {
+      decoded = undefined;
     }
     const token = z
       .object({
@@ -282,17 +294,11 @@ export class ToolService {
         refresh_token: z.string().min(1),
         expires_in: z.number().positive(),
       })
-      .safeParse(JSON.parse(result.body));
+      .safeParse(decoded);
     if (!token.success) {
       this.store.disconnect(owner, current.instance);
       throw new SafeError('GITEA_REFRESH_FAILED_RECONNECT', 401);
     }
-    // Never resurrect a connection disconnected or replaced during the upstream request.
-    if (
-      this.store.connection(owner, current.instance, true).revision !==
-      current.revision
-    )
-      throw new SafeError('CONNECTION_CHANGED_RECONNECT', 409);
     this.store.connect(
       owner,
       current.instance,
