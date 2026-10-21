@@ -50,12 +50,13 @@ jobs:
         with:
           wait-for-processing: true
       - name: Reject open high or critical code scanning alerts for this ref
+        shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           count=$(gh api --paginate --slurp -X GET "repos/$GITHUB_REPOSITORY/code-scanning/alerts" \
-            -f state=open -f ref="$GITHUB_REF" \
-            --jq '[.[][] | select(.rule.security_severity_level == "critical" or .rule.security_severity_level == "high")] | length')
+            -f state=open -f ref="$GITHUB_REF" | \
+            jq '[.[][] | select(.rule.security_severity_level == "critical" or .rule.security_severity_level == "high")] | length')
           echo "Open HIGH/CRITICAL code alerts for scanned ref: $count"
           test "$count" -eq 0
   container:
