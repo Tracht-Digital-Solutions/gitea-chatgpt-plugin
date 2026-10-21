@@ -5,7 +5,7 @@ import { operations } from '../tools/catalog.js';
 import { ToolService } from '../tools/service.js';
 import { safeCode, SafeError } from '../security/errors.js';
 import { ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
-const VERSION = '0.3.2'; // x-release-please-version
+const VERSION = '0.3.3'; // x-release-please-version
 
 export function createMcpServer(
   service: ToolService,
