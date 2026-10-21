@@ -1,6 +1,6 @@
 # Step by step: install, configure, and test
 
-[Deutsch](../de/SCHRITT-FUER-SCHRITT.md) · Updated: 2026-10-21 · Software: v0.3.1.
+[Deutsch](../de/SCHRITT-FUER-SCHRITT.md) · Updated: 2026-10-21 · Software: v0.3.2.
 
 For installation without Git or a local build, see [production package setup](PRODUCTION.md). Default Compose uses a published image and `NODE_ENV=production`. Keep `GITEA_MCP_VERSION` from the release's `.env.example`; update it intentionally when upgrading. Source builds additionally require `docker-compose.build.yml`.
 
@@ -29,7 +29,7 @@ Create DNS records and certificates for your actual hosts. ChatGPT must be able 
 ```bash
 git clone https://github.com/jtracht/gitea-chatgpt-plugin.git
 cd gitea-chatgpt-plugin
-git switch --detach v0.3.1
+git switch --detach v0.3.2
 docker version
 docker compose version
 ```
@@ -211,7 +211,7 @@ From v0.2.0, also follow the [Actions, Kanban projects, and time tracking guide]
 
 ## 13. Optional: portable package or Codex
 
-The [release ZIP](https://github.com/jtracht/gitea-chatgpt-plugin/releases/tag/v0.3.1) contains an HTTPS URL template. If your client cannot resolve it, build a package for your endpoint:
+The [release ZIP](https://github.com/jtracht/gitea-chatgpt-plugin/releases/tag/v0.3.2) contains an HTTPS URL template. If your client cannot resolve it, build a package for your endpoint:
 
 ```bash
 pnpm install --frozen-lockfile
