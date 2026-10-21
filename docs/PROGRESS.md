@@ -22,6 +22,18 @@ Die terminale Releaseabnahme umfasst zusätzlich die vom Auftrag verlangte tats�
 
 ## Bisherige Prüfungen
 
+### Erweiterung Actions, Projekte/Kanban und Zeiterfassung, 21.10.2026
+
+- 66 neue Tools; insgesamt **129** validierte MCP-Schemas. Actions: Workflowdetails, gefilterte Workflowläufe, Dispatch, Aktivierung/Deaktivierung, Wiederholung von Lauf/fehlgeschlagenen Jobs/einzelnen Jobs, regulärer Abbruch. Projekte: je 16 Operationen für Repository-, Organisations- und eigene Benutzerprojekte einschließlich Spalten, Karten, Reihenfolge und Standardspalte. Zeit: neun Operationen für Buchungen und Stoppuhren.
+- `pnpm check` erfolgreich: **397 Tests bestanden**, ein echter Gitea-Test im Standardlauf bewusst übersprungen. Typprüfung, ESLint, Prettier, Schemas/Manifest und Produktionsbuild erfolgreich. Kern-Coverage unverändert: Statements 98,04 %, Branches 94,31 %, Functions 100 %, Lines 98,93 %.
+- `pnpm test:e2e` separat erfolgreich gegen isoliertes Gitea **28.2.0**: zusätzlich Kanbanprojekt/-spalten mit Kartenverschiebung, Zeitbuchung/-löschung, Stoppuhrstart/-stopp/-verwerfen und Workflowaktivierung/-deaktivierung, Dispatch und regulärer Laufabbruch über MCP. Damit **398 unterschiedliche Tests**, kein fehlgeschlagener Test im abschließenden Lauf.
+- 76 neue gezielte Integrationsprüfungen prüfen unter anderem für jedes neue Tool API-Vertrag, Mandantentrennung und bei Schreibvorgängen fehlende Scopes, unabhängige Freigabe und Replay-Schutz. Insgesamt 121 direkte API-Vertragsprüfungen.
+- Reale Runnerausführung/Deployments und Wiederholung tatsächlich ausgeführter Jobs sind nicht nachgewiesen; Jobwiederholungen und Organisations-/Benutzerprojekte haben Vertrags- und simulierte Integrationsabdeckung. Keine pauschalen Zeitresets, fremden Zeitbuchungen, Actions-Secrets oder administrativen Runner-/Force-Operationen ergänzt.
+- Bedienungsanleitung: [Deutsch](de/PROJEKTE-ACTIONS-ZEIT.md), [English](en/PROJECTS-ACTIONS-TIME.md). Die Ergänzung wird erst nach grünen Pflichtchecks im Hauptbranch veröffentlicht; v0.1.1 enthält sie nicht. Frühere Prüfungen unten beziehen sich auf den bisherigen Release.
+- Der Gesamtstand bleibt **98 %**: Produktivdeployment und echte ChatGPT-/Codex-Kontoabnahme bleiben ausdrücklich zurückgestellt. Diese lokale Erweiterungsprüfung ersetzt sie nicht.
+
+### Vorheriger Release v0.1.1
+
 - `pnpm check`: Typprüfung, ESLint, Prettier, **189 bestandene Tests**, Manifest-/63 MCP-Schemaprüfungen und Produktionsbuild erfolgreich. Der echte Gitea-Test wird im normalen Testlauf ausdrücklich übersprungen und separat erfolgreich ausgeführt: **190 unterschiedliche Tests insgesamt, 0 fehlgeschlagen**.
 - Erweiterter sicherheitskritischer Kern einschließlich Konfiguration, MCP-Fehlerbehandlung und Tool-Autorisierung: Statements **98,04 %**, Branches **94,31 %**, Functions **100 %**, Lines **98,93 %**; Schwellen jeweils 85 % aggregiert. Einzelne Portalzweige sind nicht abgedeckt; kein Anspruch auf vollständige Pfadabdeckung.
 - `pnpm test:e2e`: separater erfolgreicher MCP-Ablauf gegen isoliertes Gitea **28.2.0**, Image-Digest `sha256:30777c91280d973fa02be48b1ade735bd6859e8f6f7af3b4444d519437852504`. Repository, Feature-Branch, Dateiänderungen, Inhaltssuche, Commit-Suche, Issue/Kommentar, Labels, Meilenstein, PR/Diff, Review, Merge, Tag und Release nachgewiesen; Standardbranchschreiben verweigert.

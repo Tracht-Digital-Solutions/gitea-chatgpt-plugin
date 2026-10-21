@@ -11,6 +11,8 @@ type JsonSchema = {
   required?: string[];
   default?: unknown;
   minimum?: number;
+  minItems?: number;
+  items?: JsonSchema;
 };
 const api = JSON.parse(
   readFileSync('docs/research/gitea-openapi.json', 'utf8'),
@@ -39,7 +41,10 @@ function sample(schema: JsonSchema, key = ''): unknown {
   if (schema.type === 'integer' || schema.type === 'number')
     return Math.max(1, schema.minimum ?? 1);
   if (schema.type === 'boolean') return false;
-  if (schema.type === 'array') return [];
+  if (schema.type === 'array')
+    return Array.from({ length: schema.minItems ?? 0 }, () =>
+      sample(schema.items ?? {}),
+    );
   if (['sha', 'head_commit_id', 'commit_id'].includes(key))
     return 'a'.repeat(40);
   if (key === 'content') return 'aGk=';
