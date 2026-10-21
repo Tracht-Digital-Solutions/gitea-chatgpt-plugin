@@ -52,6 +52,13 @@ for (const server of Object.values(servers)) {
 }
 const pkg = json('package.json');
 if (pkg.version !== manifest.version) throw new Error('Version drift');
+if (json('.release-please-manifest.json')['.'] !== pkg.version)
+  throw new Error('Release manifest version drift');
+const serverVersion = readFileSync(
+  'apps/mcp-server/src/mcp/server.ts',
+  'utf8',
+).match(/const VERSION = '([^']+)'/u)?.[1];
+if (serverVersion !== pkg.version) throw new Error('MCP server version drift');
 const presentation = (
   manifest.extensions as {
     'com.openai': { interface: { shortDescription: string; logo: string } };
