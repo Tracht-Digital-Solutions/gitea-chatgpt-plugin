@@ -5,9 +5,40 @@ import supertest from 'supertest';
 import { createApp } from '../../apps/mcp-server/src/app.js';
 import { Store } from '../../apps/mcp-server/src/security/store.js';
 import { SafeError } from '../../apps/mcp-server/src/security/errors.js';
-import { config, identity, requester } from '../helpers.js';
+import { config, identity, requester, response } from '../helpers.js';
 import { operations } from '../../apps/mcp-server/src/tools/catalog.js';
 describe('Streamable HTTP MCP', () => {
+  it('directs expired Gitea credentials to the portal without challenging the valid MCP identity', async () => {
+    const store = new Store(':memory:', config.encryptionKey);
+    store.connect(
+      identity.owner,
+      'alpha',
+      JSON.stringify({ token: 'expired-gitea-token' }),
+    );
+    const { app } = createApp(config, store, {
+      authenticate: async () => identity,
+      request: async () =>
+        response({ message: 'private upstream detail' }, 401),
+    });
+    const call = await supertest(app)
+      .post('/mcp')
+      .set('Host', 'mcp.example.org')
+      .set('Authorization', 'Bearer valid-mcp-token')
+      .set('Accept', 'application/json, text/event-stream')
+      .send({
+        jsonrpc: '2.0',
+        id: 1,
+        method: 'tools/call',
+        params: { name: 'get_authenticated_user', arguments: {} },
+      });
+    expect(call.body.result.isError).toBe(true);
+    expect(call.body.result._meta).toBeUndefined();
+    expect(JSON.stringify(call.body.result.content)).toContain(
+      'https://mcp.example.org/portal',
+    );
+    expect(JSON.stringify(call.body)).not.toContain('private upstream detail');
+    store.close();
+  });
   it('starts, authenticates, initializes, lists typed tools and calls through the SDK client', async () => {
     const store = new Store(':memory:', config.encryptionKey);
     store.connect(
