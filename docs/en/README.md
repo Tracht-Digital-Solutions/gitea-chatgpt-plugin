@@ -1,6 +1,6 @@
 # Gitea for ChatGPT
 
-[Deutsch](../../README.md) · Apache-2.0 · Early development release v0.1.0.
+[Deutsch](../../README.md) · Apache-2.0 · Early development releases in the 0.1.x series.
 
 A self-hosted Node.js 24/TypeScript MCP server and portable Agent Plugins package for ChatGPT and compatible Codex clients. Connect multiple Gitea instances per user, inspect repositories/files/commits/issues/PRs/releases/Actions, and make changes after exact, independent human browser approval. No paid cloud service is required. This is an independent community project, not an official OpenAI or Gitea product.
 
