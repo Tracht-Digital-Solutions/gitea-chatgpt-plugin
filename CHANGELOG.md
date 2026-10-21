@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/jtracht/gitea-chatgpt-plugin/compare/v0.1.1...v0.2.0) (2026-10-21)
+
+
+### Features
+
+* add Actions control, Kanban projects and time tracking ([#14](https://github.com/jtracht/gitea-chatgpt-plugin/issues/14)) ([f469680](https://github.com/jtracht/gitea-chatgpt-plugin/commit/f469680ff5e1c97ace539fe445e2a57eb73e8ab8))
+
 ## [0.1.1](https://github.com/jtracht/gitea-chatgpt-plugin/compare/v0.1.0...v0.1.1) (2026-10-21)
 
 
