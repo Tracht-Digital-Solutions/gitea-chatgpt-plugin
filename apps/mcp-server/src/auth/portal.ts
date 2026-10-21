@@ -9,6 +9,7 @@ import { Store } from '../security/store.js';
 import type { Requester } from '../security/network.js';
 import { GiteaClient } from '../gitea/client.js';
 import { RateLimiter } from '../security/limits.js';
+import { rateLimit } from 'express-rate-limit';
 
 const escape = (s: unknown) =>
   String(s).replace(
@@ -60,6 +61,13 @@ export function mountPortal(
   const sessions = new Map<string, Session>();
   const pending = new Map<string, Pending>();
   const limits = new RateLimiter(30);
+  const browserLimit = rateLimit({
+    windowMs: 60000,
+    limit: 60,
+    standardHeaders: 'draft-8',
+    legacyHeaders: false,
+    message: { error: 'RATE_LIMITED' },
+  });
   const session = (req: Request): Session => {
     const s = sessions.get(cookie(req, '__Host-gitea-session') ?? '');
     if (!s || s.expires <= Date.now())
@@ -74,7 +82,7 @@ export function mountPortal(
     )
       throw new SafeError('CSRF_DENIED', 403);
   };
-  app.get('/login', (req, res) => {
+  app.get('/login', browserLimit, (req, res) => {
     limits.take(req.ip ?? '');
     for (const [id, s] of pending)
       if (s.expires <= Date.now()) pending.delete(id);
@@ -106,7 +114,7 @@ export function mountPortal(
       u.searchParams.set(k, v);
     res.redirect(u.href);
   });
-  app.get('/callback', async (req, res) => {
+  app.get('/callback', browserLimit, async (req, res) => {
     const state = z.string().parse(req.query.state);
     const p = pending.get(state);
     pending.delete(state);
@@ -159,7 +167,7 @@ export function mountPortal(
     });
     res.redirect('/portal');
   });
-  app.get('/portal', (req, res) => {
+  app.get('/portal', browserLimit, (req, res) => {
     let s: Session;
     try {
       s = session(req);
@@ -214,7 +222,7 @@ export function mountPortal(
         '<button>Abmelden</button></form>',
     );
   });
-  app.post('/connections', async (req, res) => {
+  app.post('/connections', browserLimit, async (req, res) => {
     const s = session(req);
     authorize(s.identity, true);
     requireCsrf(req, s);
@@ -240,7 +248,7 @@ export function mountPortal(
     store.audit(s.identity.owner, p.instance, 'connect', 'success');
     res.redirect('/portal');
   });
-  app.post('/connections/disconnect', (req, res) => {
+  app.post('/connections/disconnect', browserLimit, (req, res) => {
     const s = session(req);
     authorize(s.identity, true);
     requireCsrf(req, s);
@@ -249,7 +257,7 @@ export function mountPortal(
     store.audit(s.identity.owner, instance, 'disconnect', 'success');
     res.redirect('/portal');
   });
-  app.post('/gitea/login', (req, res) => {
+  app.post('/gitea/login', browserLimit, (req, res) => {
     const s = session(req);
     authorize(s.identity, true);
     requireCsrf(req, s);
@@ -282,7 +290,7 @@ export function mountPortal(
       u.searchParams.set(k, v);
     res.redirect(u.href);
   });
-  app.get('/gitea/callback', async (req, res) => {
+  app.get('/gitea/callback', browserLimit, async (req, res) => {
     const s = session(req);
     authorize(s.identity, true);
     const state = z.string().parse(req.query.state),
@@ -334,7 +342,7 @@ export function mountPortal(
     store.audit(s.identity.owner, i.id, 'oauth_connect', 'success');
     res.redirect('/portal');
   });
-  app.get('/approvals/:id', (req, res) => {
+  app.get('/approvals/:id', browserLimit, (req, res) => {
     let s: Session;
     try {
       s = session(req);
@@ -366,7 +374,7 @@ export function mountPortal(
         '"><button>Genau diesen Auftrag einmal freigeben</button></form>',
     );
   });
-  app.post('/approvals/:id', (req, res) => {
+  app.post('/approvals/:id', browserLimit, (req, res) => {
     const s = session(req);
     authorize(s.identity, true);
     requireCsrf(req, s);
@@ -382,7 +390,7 @@ export function mountPortal(
       '<p>Im Chat kann derselbe Auftrag jetzt einmal ausgeführt werden. Die Freigabe verfällt spätestens zehn Minuten nach Erstellung.</p>',
     );
   });
-  app.post('/logout', (req, res) => {
+  app.post('/logout', browserLimit, (req, res) => {
     const s = session(req);
     requireCsrf(req, s);
     sessions.delete(cookie(req, '__Host-gitea-session') ?? '');
