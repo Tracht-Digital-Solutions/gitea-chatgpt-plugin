@@ -16,7 +16,7 @@ describe.skipIf(!url || !token)('isolated real Gitea via MCP', () => {
       const result = await fetch(actual, {
         method,
         headers,
-        body,
+        body: Buffer.isBuffer(body) ? new Uint8Array(body) : body,
         redirect: 'error',
         signal: AbortSignal.timeout(10000),
       });

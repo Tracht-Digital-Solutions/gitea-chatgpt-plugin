@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import type { Params, RegisterOperation } from './catalog.js';
+import { actionRunFilters } from './fields.js';
 
 const segment = z
   .string()
@@ -46,6 +47,13 @@ export function registerManagementTools(add: RegisterOperation): void {
     {
       ...workflow,
       ...pagination,
+      ...actionRunFilters,
+      scoped_workflow_source_repo_id: z
+        .number()
+        .int()
+        .min(0)
+        .max(Number.MAX_SAFE_INTEGER)
+        .optional(),
       branch: z.string().min(1).max(200).optional(),
       status: z
         .enum([
@@ -61,7 +69,12 @@ export function registerManagementTools(add: RegisterOperation): void {
     },
     (p) => ({
       path: workflowRoot(p) + '/runs',
-      query: pick(p, ['page', 'limit', 'branch', 'status']),
+      query: pick(p, [
+        'page',
+        'limit',
+        ...Object.keys(actionRunFilters),
+        'scoped_workflow_source_repo_id',
+      ]),
     }),
   );
   add(
@@ -86,11 +99,19 @@ export function registerManagementTools(add: RegisterOperation): void {
         )
         .refine((v) => Object.keys(v).length <= 20)
         .default({}),
+      return_run_details: z.boolean().optional(),
+      scoped_workflow_source_repo_id: z
+        .number()
+        .int()
+        .min(0)
+        .max(Number.MAX_SAFE_INTEGER)
+        .optional(),
     },
     (p) => ({
       path: workflowRoot(p) + '/dispatches',
       method: 'POST',
       body: pick(p, ['ref', 'inputs']),
+      query: pick(p, ['return_run_details', 'scoped_workflow_source_repo_id']),
     }),
     true,
     true,

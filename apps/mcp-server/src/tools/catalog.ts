@@ -1,6 +1,13 @@
 import { z } from 'zod';
 import type { ApiRequest } from '../gitea/client.js';
 import { registerManagementTools } from './management.js';
+import { registerPublishingTools } from './publishing.js';
+import {
+  issueCreateFields,
+  issueEditFields,
+  repositoryCreateFields,
+  actionRunFilters,
+} from './fields.js';
 
 export type Params = Record<string, unknown>;
 export type Operation = {
@@ -113,6 +120,7 @@ function add(
 }
 
 registerManagementTools(add);
+registerPublishingTools(add);
 
 add(
   'list_instances',
@@ -179,16 +187,11 @@ add(
 add(
   'create_repository',
   'Create a repository for the current Gitea user.',
-  {
-    name: segment,
-    description: z.string().max(2000).optional(),
-    private: z.boolean().default(true),
-    auto_init: z.boolean().default(true),
-  },
+  repositoryCreateFields,
   (p) => ({
     path: '/user/repos',
     method: 'POST',
-    body: body(p, ['name', 'description', 'private', 'auto_init']),
+    body: body(p, Object.keys(repositoryCreateFields)),
   }),
   true,
 );
@@ -362,13 +365,7 @@ add(
   issue,
   (p) => ({ path: root(p) + '/issues/' + enc(p.index) }),
 );
-const issueFields = {
-  title: z.string().min(1).max(255),
-  body: text.optional(),
-  assignees: z.array(segment).max(20).optional(),
-  labels: z.array(id).max(30).optional(),
-  milestone: id.optional(),
-};
+const issueFields = issueCreateFields;
 add(
   'create_issue',
   'Create an issue, optionally assigning labels, milestone and assignees.',
@@ -385,16 +382,12 @@ add(
   'Edit an issue, close or reopen it, or change assignees/milestone.',
   {
     ...issue,
-    title: issueFields.title.optional(),
-    body: text.optional(),
-    state: z.enum(['open', 'closed']).optional(),
-    assignees: issueFields.assignees,
-    milestone: z.number().int().min(0).optional(),
+    ...issueEditFields,
   },
   (p) => ({
     path: root(p) + '/issues/' + enc(p.index),
     method: 'PATCH',
-    body: body(p, ['title', 'body', 'state', 'assignees', 'milestone']),
+    body: body(p, Object.keys(issueEditFields)),
   }),
   true,
 );
@@ -487,7 +480,7 @@ const milestone = {
   title: z.string().min(1).max(255),
   description: z.string().max(2000).optional(),
   state: z.enum(['open', 'closed']).optional(),
-  due_on: z.iso.datetime().optional(),
+  due_on: z.iso.datetime({ offset: true }).optional(),
 };
 add(
   'create_milestone',
@@ -503,7 +496,7 @@ add(
 add(
   'update_milestone',
   'Update or close a milestone.',
-  { ...repo, id, ...milestone },
+  { ...repo, id, ...milestone, title: milestone.title.optional() },
   (p) => ({
     path: root(p) + '/milestones/' + enc(p.id),
     method: 'PATCH',
@@ -628,6 +621,7 @@ add(
     body: text.optional(),
     draft: z.boolean().default(true),
     prerelease: z.boolean().default(true),
+    tag_message: z.string().max(2000).optional(),
   },
   (p) => ({
     path: root(p) + '/releases',
@@ -639,6 +633,7 @@ add(
       'body',
       'draft',
       'prerelease',
+      'tag_message',
     ]),
   }),
   true,
@@ -670,8 +665,11 @@ add(
 add(
   'list_action_runs',
   'Read Gitea Actions runs if supported.',
-  { ...repo, ...pagination },
-  (p) => ({ path: root(p) + '/actions/runs', query: page(p) }),
+  { ...repo, ...pagination, ...actionRunFilters },
+  (p) => ({
+    path: root(p) + '/actions/runs',
+    query: pick(p, ['page', 'limit', ...Object.keys(actionRunFilters)]),
+  }),
 );
 add(
   'get_action_run',

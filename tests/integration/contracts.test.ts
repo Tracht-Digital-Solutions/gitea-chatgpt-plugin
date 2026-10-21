@@ -13,6 +13,8 @@ type JsonSchema = {
   minimum?: number;
   minItems?: number;
   items?: JsonSchema;
+  anyOf?: JsonSchema[];
+  format?: string;
 };
 const api = JSON.parse(
   readFileSync('docs/research/gitea-openapi.json', 'utf8'),
@@ -28,6 +30,7 @@ const api = JSON.parse(
 };
 const ajv = new Ajv2020({ strict: false, validateFormats: false });
 function sample(schema: JsonSchema, key = ''): unknown {
+  if (schema.anyOf) return sample(schema.anyOf[0]!, key);
   if (schema.const !== undefined) return schema.const;
   if (schema.enum) return schema.enum[0];
   if (schema.default !== undefined) return schema.default;
@@ -47,7 +50,8 @@ function sample(schema: JsonSchema, key = ''): unknown {
     );
   if (['sha', 'head_commit_id', 'commit_id'].includes(key))
     return 'a'.repeat(40);
-  if (key === 'content') return 'aGk=';
+  if (key === 'content' || key === 'content_base64') return 'aGk=';
+  if (schema.format === 'date-time') return '2026-10-21T12:00:00Z';
   if (key === 'color') return 'abcdef';
   if (key === 'due_on') return '2026-10-21T12:00:00Z';
   if (key === 'path') return 'file.txt';
@@ -62,6 +66,13 @@ describe('Gitea OpenAPI contract for every direct tool operation', () => {
         sample(z.toJSONSchema(operation.schema) as JsonSchema),
       ) as Record<string, unknown>;
       const request = operation.request!(input);
+      if (request.registry) {
+        expect(operation.name).toBe('upload_generic_package');
+        expect(request.method).toBe('PUT');
+        expect(request.path).toMatch(/^\/[^/]+\/generic\/[^/]+\/[^/]+\/[^/]+$/);
+        expect(request.rawBody).toEqual(Buffer.from('hi'));
+        return;
+      }
       const method = (request.method ?? 'GET').toLowerCase();
       const contract = Object.entries(api.paths).find(
         ([path, methods]) =>

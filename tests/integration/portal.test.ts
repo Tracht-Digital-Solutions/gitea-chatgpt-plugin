@@ -210,6 +210,9 @@ describe('secure browser setup and independent approvals', () => {
       .send({ csrf, instance: 'beta' });
     const u = new URL(String(begin.headers.location));
     expect(u.origin).toBe('https://other.example.org');
+    expect(u.searchParams.get('scope')).toBe(
+      'read:user write:organization write:package',
+    );
     expect(u.searchParams.get('code_challenge_method')).toBe('S256');
     const callback = await h
       .get('/gitea/callback?state=' + u.searchParams.get('state') + '&code=x')

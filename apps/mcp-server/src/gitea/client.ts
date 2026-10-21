@@ -6,6 +6,8 @@ export type ApiRequest = {
   query?: Record<string, unknown>;
   body?: unknown;
   text?: boolean;
+  registry?: 'generic-upload';
+  rawBody?: Buffer;
 };
 export type ApiResult = {
   data: unknown;
@@ -27,7 +29,22 @@ export class GiteaClient {
       input.path.includes('#')
     )
       throw new SafeError('INVALID_API_PATH');
-    const url = new URL(this.base + '/api/v1' + input.path);
+    if (
+      input.registry &&
+      (input.method !== 'PUT' ||
+        !/^\/[A-Za-z0-9_%.-]+\/generic\/[A-Za-z0-9_%+.-]+\/[A-Za-z0-9_%+.-]+\/[A-Za-z0-9_%+.-]+$/.test(
+          input.path,
+        ) ||
+        !input.rawBody ||
+        input.rawBody.length > 750000 ||
+        input.body !== undefined)
+    )
+      throw new SafeError('INVALID_REGISTRY_REQUEST');
+    if (input.rawBody && !input.registry)
+      throw new SafeError('INVALID_REGISTRY_REQUEST');
+    const url = new URL(
+      this.base + (input.registry ? '/api/packages' : '/api/v1') + input.path,
+    );
     for (const [k, v] of Object.entries(input.query ?? {}))
       if (v !== undefined) url.searchParams.set(k, String(v));
     const method = input.method ?? 'GET';
@@ -39,9 +56,12 @@ export class GiteaClient {
         {
           Authorization: 'token ' + this.token,
           Accept: input.text ? 'text/plain' : 'application/json',
-          'Content-Type': 'application/json',
+          'Content-Type': input.registry
+            ? 'application/octet-stream'
+            : 'application/json',
         },
-        input.body === undefined ? undefined : JSON.stringify(input.body),
+        input.rawBody ??
+          (input.body === undefined ? undefined : JSON.stringify(input.body)),
       );
       if (method === 'GET' && result.status === 503 && attempt === 0) continue;
       break;

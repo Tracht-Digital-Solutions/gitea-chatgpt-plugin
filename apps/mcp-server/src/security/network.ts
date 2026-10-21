@@ -12,7 +12,7 @@ export type Requester = (
   url: URL,
   method: string,
   headers: Record<string, string>,
-  body?: string,
+  body?: string | Buffer,
 ) => Promise<HttpResult>;
 
 export function isAllowedAddress(

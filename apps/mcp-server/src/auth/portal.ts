@@ -2,6 +2,7 @@ import { randomBytes, createHash, timingSafeEqual } from 'node:crypto';
 import type { Express, Request, Response } from 'express';
 import { z } from 'zod';
 import type { Config } from '../config/index.js';
+import { defaultGiteaScopes } from '../config/index.js';
 import type { Authenticator, Identity } from './identity.js';
 import { authorize } from './identity.js';
 import { SafeError } from '../security/errors.js';
@@ -281,8 +282,7 @@ export function mountPortal(
       client_id: instance.oauthClientId,
       response_type: 'code',
       redirect_uri: config.publicUrl + '/gitea/callback',
-      scope:
-        'read:user read:repository write:repository read:issue write:issue',
+      scope: (instance.oauthScopes ?? defaultGiteaScopes).join(' '),
       state,
       code_challenge: createHash('sha256').update(verifier).digest('base64url'),
       code_challenge_method: 'S256',

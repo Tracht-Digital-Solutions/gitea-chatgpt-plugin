@@ -62,6 +62,8 @@ Manual entries are booked for the authenticated Gitea user; impersonation is not
 
 ## Evidence and limitations
 
+Updated evidence: [parameter and function verification](PARAMETER-AND-FUNCTION-VERIFICATION.md) covers real runner execution/reruns and organization/current-user project round trips. The following paragraph records the earlier v0.2.0 coverage.
+
 Every new tool has contract, validation, scope, tenant, approval, and replay checks. An isolated Gitea 28.2.0 MCP test covers repository Kanban/card movement, time entry creation/deletion, stopwatches, workflow enable/disable, dispatch, and regular cancellation. It does not execute a runner or deploy anything. Job reruns have contract and simulated-response coverage; organization/user project APIs have contract coverage without full real-account acceptance of those scopes.
 
 HTTP 404 can indicate an absent, unsupported, or inaccessible endpoint. No browser scraping or permission bypass is used. Real ChatGPT/Codex account integration remains unverified until deployment. See [verification evidence](../PROGRESS.md).
