@@ -12,7 +12,7 @@
     "branding": "tsx scripts/branding.ts",
     "branding:check": "tsx scripts/branding.ts --check",
     "dev": "tsx watch apps/mcp-server/src/index.ts",
-    "start": "node dist/apps/mcp-server/src/index.js",
+    "start": "node --env-file-if-exists=.env --import ./scripts/production.mjs dist/apps/mcp-server/src/index.js",
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
