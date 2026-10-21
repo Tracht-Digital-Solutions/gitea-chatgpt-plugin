@@ -88,6 +88,8 @@ for (const path of [
   'docker-compose.yml',
   'LICENSE',
   'README.md',
+  'plugin/assets/icon.png',
+  'plugin/assets/icon.svg',
 ])
   deployment[path] = new Uint8Array(readFileSync(path));
 function addDocs(dir: string): void {
