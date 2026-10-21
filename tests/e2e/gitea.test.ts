@@ -8,7 +8,7 @@ import { config, identity } from '../helpers.js';
 const url = process.env.GITEA_E2E_URL,
   token = process.env.GITEA_E2E_TOKEN;
 describe.skipIf(!url || !token)('isolated real Gitea via MCP', () => {
-  it('creates a private repository, feature branch, file commit, issue, PR, tag and release with exact approvals', async () => {
+  it('manages repositories, Kanban, time tracking, Actions, PRs and releases through MCP with exact approvals', async () => {
     if (!url?.startsWith('http://127.0.0.1:') || !token)
       throw new Error('Only the disposable loopback fixture is permitted');
     const request: Requester = async (target, method, headers, body) => {
@@ -87,6 +87,15 @@ describe.skipIf(!url || !token)('isolated real Gitea via MCP', () => {
       });
       await write('create_file', {
         ...base,
+        path: '.gitea/workflows/manual.yml',
+        branch: 'feature/e2e',
+        message: 'feat: manual workflow fixture',
+        content: Buffer.from(
+          'name: Manual MCP test\non:\n  workflow_dispatch:\njobs:\n  test:\n    runs-on: isolated-no-runner\n    steps:\n      - run: echo isolated\n',
+        ).toString('base64'),
+      });
+      await write('create_file', {
+        ...base,
         path: 'hello.txt',
         branch: 'feature/e2e',
         message: 'feat: hello',
@@ -148,7 +157,87 @@ describe.skipIf(!url || !token)('isolated real Gitea via MCP', () => {
           title: 'E2E issue',
           body: 'untrusted test data',
         })
-      ).data as { number: number };
+      ).data as { number: number; id: number };
+      const timeArgs = { ...base, index: issue.number };
+      const booked = (
+        await write('add_issue_time', { ...timeArgs, time: 1800 })
+      ).data as { id: number; time: number };
+      expect(booked.time).toBe(1800);
+      expect((await call('list_issue_times', timeArgs)).data).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ id: booked.id, time: 1800 }),
+        ]),
+      );
+      expect((await call('list_repository_times', base)).data).toEqual(
+        expect.arrayContaining([expect.objectContaining({ id: booked.id })]),
+      );
+      expect((await call('list_my_times')).data).toEqual(
+        expect.arrayContaining([expect.objectContaining({ id: booked.id })]),
+      );
+      await write('delete_issue_time', { ...timeArgs, time_id: booked.id });
+      await write('start_issue_stopwatch', timeArgs);
+      expect((await call('list_stopwatches')).data).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ issue_index: issue.number }),
+        ]),
+      );
+      await write('stop_issue_stopwatch', timeArgs);
+      await write('start_issue_stopwatch', timeArgs);
+      await write('discard_issue_stopwatch', timeArgs);
+      expect((await call('list_stopwatches')).data).toEqual([]);
+
+      const project = (
+        await write('create_project', {
+          ...base,
+          title: 'MCP Kanban',
+          template_type: 'none',
+        })
+      ).data as { id: number };
+      const projectArgs = { ...base, project: project.id };
+      expect((await call('list_projects', base)).data).toEqual(
+        expect.arrayContaining([expect.objectContaining({ id: project.id })]),
+      );
+      const todo = (
+        await write('create_project_column', {
+          ...projectArgs,
+          title: 'Todo',
+          color: '#aabbcc',
+        })
+      ).data as { id: number };
+      const done = (
+        await write('create_project_column', { ...projectArgs, title: 'Done' })
+      ).data as { id: number };
+      await write('add_project_issue', {
+        ...projectArgs,
+        column: todo.id,
+        issue_id: issue.id,
+      });
+      await write('move_project_issue', {
+        ...projectArgs,
+        issue_id: issue.id,
+        column_id: done.id,
+      });
+      expect(
+        (
+          await call('list_project_column_issues', {
+            ...projectArgs,
+            column: done.id,
+          })
+        ).data,
+      ).toEqual(
+        expect.arrayContaining([expect.objectContaining({ id: issue.id })]),
+      );
+      await write('remove_project_issue', {
+        ...projectArgs,
+        column: done.id,
+        issue_id: issue.id,
+      });
+      await write('update_project', { ...projectArgs, state: 'closed' });
+      expect((await call('get_project', projectArgs)).data).toHaveProperty(
+        'state',
+        'closed',
+      );
+      await write('delete_project', projectArgs);
       await write('create_issue_comment', {
         ...base,
         index: issue.number,
@@ -239,6 +328,27 @@ describe.skipIf(!url || !token)('isolated real Gitea via MCP', () => {
       expect(
         (await call('get_pull_request', { ...base, index: pr.number })).data,
       ).toHaveProperty('merged', true);
+      const workflowArgs = { ...base, workflow: 'manual.yml' };
+      await write('disable_action_workflow', workflowArgs);
+      expect(
+        (await call('get_action_workflow', workflowArgs)).data,
+      ).toHaveProperty('state', 'disabled_manually');
+      await write('enable_action_workflow', workflowArgs);
+      await write('dispatch_action_workflow', {
+        ...workflowArgs,
+        ref: branch,
+        inputs: {},
+      });
+      let runId: number | undefined;
+      for (let attempt = 0; attempt < 10; attempt++) {
+        const runs = (await call('list_action_workflow_runs', workflowArgs))
+          .data as { workflow_runs: { id: number }[] };
+        runId = runs.workflow_runs[0]?.id;
+        if (runId) break;
+        await new Promise((r) => setTimeout(r, 250));
+      }
+      expect(runId).toBeDefined();
+      await write('cancel_action_run', { ...base, run: runId });
       await write('create_tag', {
         ...base,
         tag_name: 'v0.0.1-test',

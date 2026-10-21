@@ -8,6 +8,8 @@ A self-hosted Node.js 24/TypeScript MCP server and portable Agent Plugins packag
 
 ## Install
 
+New on main: [Actions control, projects/Kanban, and time tracking](PROJECTS-ACTIONS-TIME.md), with exact browser approval for mutations. These additions are not included in v0.1.1.
+
 ```bash
 git clone https://github.com/jtracht/gitea-chatgpt-plugin.git
 cd gitea-chatgpt-plugin

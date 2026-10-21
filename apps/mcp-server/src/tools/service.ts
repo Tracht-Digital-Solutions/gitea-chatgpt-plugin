@@ -122,7 +122,7 @@ export class ToolService {
         result = {
           version: (await client.call({ path: '/version' })).data,
           optionalEndpoints:
-            'Actions, dependency and compare endpoints are probed on use. A 404 means unavailable or inaccessible; no support is inferred from a version string.',
+            'Actions control, projects/Kanban, time tracking, dependency and compare endpoints are probed on use. A 404 means unavailable or inaccessible; no support is inferred from a version string.',
           adminTools: false,
         };
       else if (name === 'search_commit_history') {

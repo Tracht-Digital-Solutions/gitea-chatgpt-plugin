@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import type { ApiRequest } from '../gitea/client.js';
+import { registerManagementTools } from './management.js';
 
 export type Params = Record<string, unknown>;
 export type Operation = {
@@ -63,6 +64,14 @@ const pick = (p: Params, keys: string[]) =>
 const page = (p: Params) => pick(p, ['page', 'limit', 'state', 'q', 'sha']);
 const body = (p: Params, keys: string[]) => pick(p, keys);
 export const operations: Operation[] = [];
+export type RegisterOperation = (
+  name: string,
+  description: string,
+  shape: z.ZodRawShape,
+  request?: Operation['request'],
+  write?: boolean,
+  destructive?: boolean,
+) => void;
 function add(
   name: string,
   description: string,
@@ -102,6 +111,8 @@ function add(
     featureBranch,
   });
 }
+
+registerManagementTools(add);
 
 add(
   'list_instances',

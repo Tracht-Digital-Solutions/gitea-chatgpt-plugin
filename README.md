@@ -19,7 +19,9 @@ Ein selbst hostbarer MCP-Server mit portablem Agent-Plugins-Paket für die Verwa
 - Feature-Branches und Datei-Commits erstellen, bearbeiten oder löschen, Diffs und Vergleiche lesen.
 - Issues, Kommentare, Zuständige, Labels, Meilensteine und verfügbare Abhängigkeiten.
 - Pull Requests, Diffs, Dateien, Reviews und ausdrücklich freigegebene Merges mit Head-SHA-Prüfung.
-- Releases und Tags mit separater Freigabe; Actions-Workflows, Runs, Jobs und verfügbare Logs lesen.
+- Releases und Tags mit separater Freigabe; Actions lesen, Workflows starten/aktivieren/deaktivieren, Läufe oder Jobs wiederholen und Läufe abbrechen.
+- Repository-, Organisations- und Benutzerprojekte mit Kanban-Spalten und Issue-Karten erstellen, bearbeiten, sortieren und verschieben.
+- Zeiten pro Issue buchen/lesen/löschen und eigene Stoppuhren starten, stoppen oder verwerfen. [Einrichtung, Beispiele und Grenzen dieser Erweiterungen](docs/de/PROJEKTE-ACTIONS-ZEIT.md); noch nicht in v0.1.1 enthalten.
 - Keine öffentlichen Administrations-, Runner-, Webhook- oder Rechteänderungstools.
 
 Alle Funktionen sind ohne ChatGPT-App-UI nutzbar. Die sichere Einrichtung und menschliche Schreibfreigabe erfolgen bewusst in einem eigenen Browserportal.
