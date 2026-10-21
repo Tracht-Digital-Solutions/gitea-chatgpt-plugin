@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/jtracht/gitea-chatgpt-plugin/compare/v0.3.0...v0.3.1) (2026-10-21)
+
+
+### Bug Fixes
+
+* require explicit configuration of own Gitea server ([#19](https://github.com/jtracht/gitea-chatgpt-plugin/issues/19)) ([0ce4ca4](https://github.com/jtracht/gitea-chatgpt-plugin/commit/0ce4ca412bead9cd1d6a14d1ca16039a3ff83f2a))
+
 ## [0.3.0](https://github.com/jtracht/gitea-chatgpt-plugin/compare/v0.2.0...v0.3.0) (2026-10-21)
 
 
