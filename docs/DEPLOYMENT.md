@@ -2,6 +2,8 @@
 
 [English deployment guide](en/DEPLOYMENT.md).
 
+Für die Ersteinrichtung: [vollständige Schritt-für-Schritt-Anleitung](de/SCHRITT-FUER-SCHRITT.md) mit konkreten Kontrollpunkten vom Server bis zum ersten Schreibauftrag.
+
 ## 1. DNS, HTTPS und OAuth vorbereiten
 
 Zwei eigene HTTPS-Adressen bereitstellen: z. B. `mcp.example.org` für diesen Server und `auth.example.org` für einen OAuth/OIDC-Anbieter. Beispielnamen sind keine bereitgestellten Dienste. Gitea kann unabhängig davon auf einem dritten Host laufen. Ein vorhandener Anbieter ist verwendbar, sofern er Authorization Code mit S256-PKCE, Discovery, JWT-Zugangstokens mit passender Audience und Scopes unterstützt. Keycloak ist eine kostenlose selbst hostbare Möglichkeit; [offizielle Containeranleitung](https://www.keycloak.org/server/containers).

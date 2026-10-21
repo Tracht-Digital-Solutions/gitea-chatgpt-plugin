@@ -51,6 +51,8 @@ Die terminale Releaseabnahme umfasst zusätzlich die vom Auftrag verlangte tats�
 
 ## Noch nicht verifiziert
 
+Ergänzung vom 21.10.2026: vollständige [deutsche](de/SCHRITT-FUER-SCHRITT.md) und [englische](en/STEP-BY-STEP.md) Schritt-für-Schritt-Anleitungen für die Ersteinrichtung ergänzt und aus README, Installation und Deployment verlinkt. Sie dokumentieren ausdrücklich die vom Betreiber noch auszuführenden HTTPS-/OAuth- und Kontotests. Der Fortschritt bleibt bei **98 %**; Dokumentation ersetzt keine produktive Kontoabnahme.
+
 - **Vom Benutzer ausdrücklich zurückgestellt:** produktives HTTPS-Deployment mit eigenem OAuth-Anbieter. Gewünscht sind Installationspaket und Anleitung.
 - **Nicht verifiziert:** tatsächliche Installation/Toolauswahl im ChatGPT-/Codex-Konto. Die vorhandene lokale SDK-Clientprüfung ersetzt diese Abnahme nicht. Kein konkreter produktiver MCP-Endpunkt wird behauptet.
 - Öffentliche Verzeichnisfreigabe, unabhängiger Penetrationstest und jede ältere Gitea-Version. Optional nicht vorhandene APIs scheitern geschlossen.
