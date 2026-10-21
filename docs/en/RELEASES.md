@@ -2,6 +2,8 @@
 
 Use Conventional Commits: `fix:` patch, `feat:` minor, `!` or `BREAKING CHANGE:` major. Tags use `vMAJOR.MINOR.PATCH`. Release Please updates the root package, portable manifest, MCP server version and changelog together.
 
+Release Please owns the formatting of `CHANGELOG.md`, `.release-please-manifest.json` and `plugin/plugin.json`. These generated files are excluded from Prettier while JSON/schema/version checks remain mandatory. Generator formatting differences therefore do not block automated release PRs.
+
 CI runs type checking, ESLint, Prettier, coverage-gated tests, Gitea OpenAPI contracts, isolated real Gitea E2E, manifest/package validation, production build, Docker build and a non-root/read-only health check. Security runs dependency auditing, the free pinned Gitleaks CLI over full Git history, CodeQL and Trivy image/config scans. CodeQL results are processed before the workflow rejects open high/critical findings for the scanned ref. External Actions are commit-pinned; untrusted PRs receive no production secrets/write privileges.
 
 The Release workflow calls both reusable quality/security gates. Release Please maintains release PRs and creates tags/releases when those PRs merge. Because GITHUB_TOKEN-created PRs do not automatically trigger ordinary workflows, the workflow explicitly dispatches CI/Security on the generated release branch. Repository settings must permit Actions to create PRs.
