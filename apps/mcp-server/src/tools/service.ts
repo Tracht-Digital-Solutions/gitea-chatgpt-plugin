@@ -7,6 +7,7 @@ import { GiteaClient } from '../gitea/client.js';
 import type { Requester } from '../security/network.js';
 import { RateLimiter } from '../security/limits.js';
 import { z } from 'zod';
+import { publicServerRequest } from '../security/public-server.js';
 
 export class ToolService {
   private readonly limits = new RateLimiter();
@@ -15,6 +16,7 @@ export class ToolService {
     readonly config: Config,
     readonly store: Store,
     readonly request: Requester,
+    private readonly customRequest?: Requester,
   ) {}
   async execute(
     identity: Identity,
@@ -34,12 +36,20 @@ export class ToolService {
         connected: this.store.list(identity.owner),
         available: this.config.instances.map((i) => ({ id: i.id, url: i.url })),
         setupUrl: this.config.publicUrl + '/portal',
+        selfService: this.config.allowUserServers,
       };
     if (name === 'connection_setup')
       return {
-        setupUrl: this.config.publicUrl + '/portal',
-        instructions:
-          'Open in your browser, sign in, connect a Gitea instance. Never paste credentials into chat.',
+        setupUrl:
+          this.config.publicUrl +
+          '/portal' +
+          (p.serverUrl && this.config.allowUserServers
+            ? '?server=' + encodeURIComponent(String(p.serverUrl))
+            : ''),
+        selfService: this.config.allowUserServers,
+        instructions: this.config.allowUserServers
+          ? 'Open this secure link, sign in, enter your own Gitea HTTPS server and connect your account there. Then return to ChatGPT and call list_instances and connection_status. Never paste credentials into chat. No Docker or .env setup is required for end users; the operator hosts this MCP service once.'
+          : 'Open this secure link and connect an operator-approved server. This operator has disabled self-service server registration. Never paste credentials into chat.',
       };
     const conn = await this.connection(
       identity.owner,
@@ -48,9 +58,20 @@ export class ToolService {
           ? p.selected
           : undefined)) as string | undefined,
     );
-    const instance = this.config.instances.find((i) => i.id === conn.instance);
+    const instance =
+      conn.customUrl && this.config.allowUserServers
+        ? { id: conn.instance, url: conn.customUrl }
+        : !conn.customUrl
+          ? this.config.instances.find((i) => i.id === conn.instance)
+          : undefined;
     if (!instance) throw new SafeError('INSTANCE_DISABLED', 403);
-    const client = new GiteaClient(instance.url, conn.token, this.request);
+    const client = new GiteaClient(
+      instance.url,
+      conn.token,
+      conn.customUrl
+        ? (this.customRequest ?? publicServerRequest(conn.customUrl))
+        : this.request,
+    );
     try {
       if (operation.write) {
         // Resolving the active instance now binds the approval to that connection even when input omits it.

@@ -16,7 +16,9 @@ Dateischreiben erfordert Push-Recht und einen nachweislich ungeschützten Featur
 
 ## Netzwerkschutz und Grenzen
 
-Betreiber erlauben genaue HTTPS-Basis-URLs; Benutzer wählen daraus ihre Verbindungen. Für weitere Instanzen Betreiberkonfiguration erweitern. DNS wird bei jeder Anfrage vollständig geprüft; eine private/unsichere Antwort sperrt die Anfrage. Die geprüfte IP wird beim TLS-Verbindungsaufbau gepinnt. Zertifikatsprüfung bleibt aktiv. Redirects, URL-Credentials, fremde Hosts und Basis-Prefix-Tricks werden verweigert.
+Selbsteinrichtung über `connection_setup` und das CSRF-geschützte Portal speichert Adresse und Token zusammen verschlüsselt pro Benutzer/Instanz. Nur öffentliche HTTPS-Ziele auf Port 443 sind erlaubt; jeder Request erhält eine eigene feste Basisfreigabe mit DNS-Prüfung und TLS-Pinning. Betreiber-CIDR-Ausnahmen werden niemals übernommen. `ALLOW_USER_SERVERS=false` sperrt diesen Weg einschließlich bestehender selbst eingerichteter Verbindungen. Zugangsdaten sind keine MCP-Parameter. Änderungen der Verbindung erneuern deren Revision und entwerten ausstehende Schreibfreigaben.
+
+Für interne oder vorkonfigurierte Instanzen erlauben Betreiber genaue HTTPS-Basis-URLs. Öffentliche selbst eingerichtete Instanzen sind zusätzlich nach den oben beschriebenen Regeln zulässig. DNS wird bei jeder Anfrage vollständig geprüft; eine private/unsichere Antwort sperrt die Anfrage. Die geprüfte IP wird beim TLS-Verbindungsaufbau gepinnt. Zertifikatsprüfung bleibt aktiv. Redirects, URL-Credentials, fremde Hosts und Basis-Prefix-Tricks werden verweigert.
 
 Interne IPs, Loopback und Metadatenadressen sind standardmäßig gesperrt. `ALLOWED_PRIVATE_CIDRS` ist eine ausdrücklich privilegierte Ausnahme für vertrauenswürdige Netze; nur die kleinstmöglichen Bereiche eintragen, keine öffentlichen Benutzer verwalten diese Ausnahme. OAuth-Anbieter/JWKS sind vertrauenswürdige Betreiberkonfiguration; ihre Absicherung und Erreichbarkeit bleiben Betreiberpflicht.
 

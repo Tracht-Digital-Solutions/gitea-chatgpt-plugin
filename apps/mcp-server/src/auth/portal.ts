@@ -11,6 +11,10 @@ import type { Requester } from '../security/network.js';
 import { GiteaClient } from '../gitea/client.js';
 import { RateLimiter } from '../security/limits.js';
 import { rateLimit } from 'express-rate-limit';
+import {
+  publicServerUrl,
+  publicServerRequest,
+} from '../security/public-server.js';
 
 const escape = (s: unknown) =>
   String(s).replace(
@@ -58,6 +62,7 @@ export function mountPortal(
   store: Store,
   authenticate: Authenticator,
   request: Requester,
+  customRequest?: Requester,
 ): void {
   const sessions = new Map<string, Session>();
   const pending = new Map<string, Pending>();
@@ -182,9 +187,20 @@ export function mountPortal(
       res,
       'Gitea for ChatGPT – Verbindungen',
       '<p>Zugangsdaten ausschließlich hier eingeben. Schreibaufträge benötigen eine separate Freigabe.</p>' +
-        (config.instances.length === 0
-          ? '<section><h2>Eigenen Gitea-Server einrichten</h2><p>Es ist noch kein Gitea-Server eingerichtet. Trage als Betreiber die HTTPS-Adresse deines eigenen Servers unter <code>GITEA_INSTANCES</code> in der Serverkonfiguration ein und starte den MCP-Server neu. Danach kannst du hier dein Gitea-Konto verbinden.</p></section>'
-          : '<p>Wähle deinen eigenen, vom Betreiber freigegebenen Gitea-Server und verbinde dein Konto.</p>') +
+        (config.allowUserServers
+          ? '<section><h2>Eigenen Gitea-Server verbinden</h2><p>Gib die öffentliche HTTPS-Adresse deines Servers ein. Keine Installation oder Serverkonfiguration erforderlich. Interne Server benötigen die Freigabe des Betreibers.</p><form method="post" action="/connections/custom">' +
+            csrf +
+            '<label>Verbindungsname <input name="name" required pattern="[a-z0-9-]{1,32}" maxlength="32" placeholder="mein-server"></label><label>Gitea-Server <input name="url" type="url" required maxlength="2048" placeholder="https://DEIN-GITEA-HOST" value="' +
+            escape(
+              typeof req.query.server === 'string' &&
+                publicServerUrl.safeParse(req.query.server).success
+                ? req.query.server
+                : '',
+            ) +
+            '"></label><label>Persönliches Gitea-Token <input type="password" name="token" required autocomplete="off" maxlength="4096"></label><p>Mit Verbinden bestätigst du, dass dieses Token ausschließlich an den oben angegebenen Server gesendet werden darf.</p><button>Eigenen Server verbinden</button></form></section>'
+          : config.instances.length === 0
+            ? '<section><h2>Eigenen Gitea-Server einrichten</h2><p>Es ist noch kein Gitea-Server eingerichtet. Trage als Betreiber die HTTPS-Adresse deines eigenen Servers unter <code>GITEA_INSTANCES</code> in der Serverkonfiguration ein und starte den MCP-Server neu. Danach kannst du hier dein Gitea-Konto verbinden.</p></section>'
+            : '<p>Wähle deinen eigenen, vom Betreiber freigegebenen Gitea-Server und verbinde dein Konto.</p>') +
         config.instances
           .map(
             (i) =>
@@ -225,6 +241,44 @@ export function mountPortal(
         csrf +
         '<button>Abmelden</button></form>',
     );
+  });
+  app.post('/connections/custom', browserLimit, async (req, res) => {
+    const s = session(req);
+    authorize(s.identity, true);
+    requireCsrf(req, s);
+    if (!config.allowUserServers)
+      throw new SafeError('SELF_SERVICE_DISABLED', 403);
+    limits.take(s.identity.owner);
+    const p = z
+      .object({
+        name: z.string().regex(/^[a-z0-9-]{1,32}$/),
+        url: publicServerUrl,
+        token: z.string().min(10).max(4096),
+        csrf: z.string(),
+      })
+      .strict()
+      .parse(req.body);
+    const id = 'custom-' + p.name;
+    if (config.instances.some((i) => i.id === id))
+      throw new SafeError('INSTANCE_NAME_RESERVED', 409);
+    if (
+      !store.list(s.identity.owner).includes(id) &&
+      store.list(s.identity.owner).length >= 20
+    )
+      throw new SafeError('CONNECTION_LIMIT', 429);
+    const customUrl = new URL(p.url).href.replace(/\/$/, '');
+    await new GiteaClient(
+      customUrl,
+      p.token,
+      customRequest ?? publicServerRequest(customUrl),
+    ).call({ path: '/user' });
+    store.connect(
+      s.identity.owner,
+      id,
+      JSON.stringify({ token: p.token, customUrl }),
+    );
+    store.audit(s.identity.owner, id, 'connect', 'success');
+    res.redirect('/portal');
   });
   app.post('/connections', browserLimit, async (req, res) => {
     const s = session(req);

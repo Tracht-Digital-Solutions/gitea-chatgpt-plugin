@@ -28,7 +28,7 @@ docker compose up -d --no-build --wait
 
 You must provide your own HTTPS reverse proxy and OAuth/OIDC provider. The server has no unauthenticated production mode. See [deployment](DEPLOYMENT.md) and [security](SECURITY.md).
 
-**Connect your own Gitea server:** No Gitea host is preconfigured (`GITEA_INSTANCES=[]`). Set your own HTTPS address in your local `.env`, for example `GITEA_INSTANCES=[{"id":"my-server","url":"https://YOUR-GITEA-HOST"}]`, replacing the placeholder with your actual host, then restart the MCP server. Multiple explicitly approved servers are supported.
+**Set up from ChatGPT:** Install the plugin and ask it to set up your Gitea server. `connection_setup` returns a protected setup link, optionally prefilled with your public HTTPS address. With the default `ALLOW_USER_SERVERS=true`, users need no `.env`, Docker or operator server-list changes. Internal servers still require operator configuration. See [ChatGPT setup](CHATGPT-SETUP.md). Deployment instructions are for the operator of the shared MCP service; this project has not yet published a production endpoint.
 
 Open `https://<your-host>/portal`, sign in and connect Gitea using configured Gitea OAuth or a narrowly scoped PAT entered only into the portal password field. Never paste credentials into chat. Multiple connections are isolated by OAuth issuer/subject and instance. Disconnect through the portal; revoke the upstream grant in Gitea for complete revocation.
 

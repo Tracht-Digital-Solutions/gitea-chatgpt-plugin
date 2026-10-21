@@ -7,7 +7,7 @@ Lade aus dem gewünschten GitHub-Release **gitea-deployment-VERSION.zip** herunt
 1. Kopiere `.env.example` nach `.env`. Behalte `GITEA_MCP_VERSION` auf der zum ZIP gehörenden Version. Sie wählt das geprüfte, veröffentlichte Image ausdrücklich aus.
 2. Erzeuge einmal einen zufälligen 32-Byte-Schlüssel, z. B. mit `openssl rand -hex 32`, und trage ihn unter `ENCRYPTION_KEY` ein. Sichere den Schlüssel separat. Beschränke die Dateirechte auf den Betreiber (`chmod 600 .env` unter Linux).
 3. Trage deine eigenen MCP-/OAuth-HTTPS-Adressen und die OAuth-Client-ID ein. Registriere Clients, PKCE, Scopes, Audience und exakte Callbacks gemäß [Schritt-für-Schritt-Anleitung](SCHRITT-FUER-SCHRITT.md). Verwende keinen OAuth-Entwicklungsmodus.
-4. Ergänze deinen eigenen Gitea-Server in `GITEA_INSTANCES`. Ohne Eintrag startet der Dienst mit einem Einrichtungshinweis; es wird kein Server automatisch verbunden. Zugangsdaten gehören ausschließlich ins geschützte Browserportal oder die dokumentierte Secret-Konfiguration.
+4. Die Vorgabe `ALLOW_USER_SERVERS=true` erlaubt Nutzern, ihren öffentlichen Gitea-HTTPS-Server über den aus ChatGPT gelieferten Einrichtungslink selbst zu verbinden. `GITEA_INSTANCES=[]` kann leer bleiben. Nur feste interne Instanzen oder vorbereitete Gitea-OAuth-Clients benötigen hier Betreiber-Einträge. Mit `ALLOW_USER_SERVERS=false` sind nur diese Einträge erlaubt. Zugangsdaten gehören ausschließlich ins geschützte Portal oder dokumentierte Betreiber-Secrets.
 5. Starte den Dienst im entpackten Ordner:
 
 ```bash

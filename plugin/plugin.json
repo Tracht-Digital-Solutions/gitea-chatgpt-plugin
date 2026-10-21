@@ -20,7 +20,7 @@
           "Read",
           "Write"
         ],
-        "defaultPrompt": "List my connected Gitea repositories.",
+        "defaultPrompt": "Help me connect my own Gitea server, then list my repositories.",
         "logo": "./assets/icon.png"
       }
     }

@@ -56,6 +56,7 @@ export type Config = {
   port: number;
   instances: Instance[];
   privateCidrs: string[];
+  allowUserServers: boolean;
 };
 
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
@@ -83,6 +84,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
         })
         .pipe(z.array(instanceSchema)),
       ALLOWED_PRIVATE_CIDRS: z.string().default(''),
+      ALLOW_USER_SERVERS: z.enum(['true', 'false']).default('true'),
     })
     .parse(env);
   const publicUrl = new URL(parsed.PUBLIC_URL);
@@ -114,6 +116,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     database: parsed.DATABASE_PATH,
     port: parsed.PORT,
     instances,
+    allowUserServers: parsed.ALLOW_USER_SERVERS === 'true',
     privateCidrs: parsed.ALLOWED_PRIVATE_CIDRS.split(',')
       .map((s) => s.trim())
       .filter(Boolean),

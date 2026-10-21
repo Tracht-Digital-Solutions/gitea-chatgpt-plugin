@@ -15,10 +15,17 @@ const host = (app: Express) => ({
       .set('Host', 'mcp.example.org')
       .set('Origin', config.publicUrl),
 });
-function setup(request?: Requester, instances = config.instances) {
+function setup(
+  request?: Requester,
+  instances = config.instances,
+  allowUserServers = false,
+  customRequest?: Requester,
+  authIdentity = identity,
+) {
   const store = new Store(':memory:', config.encryptionKey);
-  const result = createApp({ ...config, instances }, store, {
-    authenticate: async () => identity,
+  const result = createApp({ ...config, instances, allowUserServers }, store, {
+    customRequest,
+    authenticate: async () => authIdentity,
     request:
       request ??
       (async (url) =>
@@ -55,6 +62,259 @@ async function login(h: ReturnType<typeof host>) {
   return { sid, csrf };
 }
 describe('secure browser setup and independent approvals', () => {
+  it('requires write scope and enforces reserved names, connection quota and the operator disable switch', async () => {
+    const customRequest = vi.fn<Requester>(async () =>
+      response({ login: 'own-user' }),
+    );
+    const readOnly = setup(undefined, [], true, customRequest, {
+      ...identity,
+      scopes: ['gitea.read'],
+    });
+    try {
+      const { sid, csrf } = await login(readOnly.h);
+      expect(
+        (
+          await readOnly.h
+            .post('/connections/custom')
+            .set('Cookie', sid)
+            .type('form')
+            .send({
+              name: 'work',
+              url: 'https://own.example.org',
+              token: 'fixture-token',
+              csrf,
+            })
+        ).status,
+      ).toBe(403);
+      expect(customRequest).not.toHaveBeenCalled();
+    } finally {
+      readOnly.store.close();
+    }
+    const reserved = setup(
+      undefined,
+      [{ id: 'custom-work', url: 'https://reserved.example.org' }],
+      true,
+      customRequest,
+    );
+    try {
+      const { sid, csrf } = await login(reserved.h);
+      const payload = {
+        name: 'work',
+        url: 'https://own.example.org',
+        token: 'fixture-token',
+        csrf,
+      };
+      expect(
+        (
+          await reserved.h
+            .post('/connections/custom')
+            .set('Cookie', sid)
+            .type('form')
+            .send(payload)
+        ).status,
+      ).toBe(409);
+      for (let i = 0; i < 20; i++)
+        reserved.store.connect(
+          identity.owner,
+          'custom-' + i,
+          JSON.stringify({
+            token: 'fixture-token',
+            customUrl: 'https://own.example.org',
+          }),
+        );
+      expect(
+        (
+          await reserved.h
+            .post('/connections/custom')
+            .set('Cookie', sid)
+            .type('form')
+            .send({ ...payload, name: 'new' })
+        ).status,
+      ).toBe(429);
+      const { ToolService } =
+        await import('../../apps/mcp-server/src/tools/service.js');
+      const disabled = new ToolService(
+        { ...config, allowUserServers: false },
+        reserved.store,
+        customRequest,
+        customRequest,
+      );
+      await expect(
+        disabled.execute(identity, 'get_authenticated_user', {
+          instance: 'custom-0',
+        }),
+      ).rejects.toThrow('INSTANCE_DISABLED');
+      expect(customRequest).not.toHaveBeenCalled();
+    } finally {
+      reserved.store.close();
+    }
+  });
+  it('sets up an own server from a ChatGPT link without operator configuration and separates owners', async () => {
+    const customRequest = vi.fn<Requester>(async () =>
+      response({ login: 'own-user' }),
+    );
+    const { h, store, service } = setup(undefined, [], true, customRequest);
+    try {
+      const link = await service.execute(identity, 'connection_setup', {
+        serverUrl: 'https://own.example.org/gitea',
+      });
+      expect(link.selfService).toBe(true);
+      expect(link.setupUrl).toBe(
+        config.publicUrl +
+          '/portal?server=https%3A%2F%2Fown.example.org%2Fgitea',
+      );
+      const { sid, csrf } = await login(h);
+      const portal = await h
+        .get('/portal?server=https%3A%2F%2Fown.example.org%2Fgitea')
+        .set('Cookie', sid);
+      expect(portal.text).toContain('value="https://own.example.org/gitea"');
+      expect(portal.text).toContain('action="/connections/custom"');
+      const connected = await h
+        .post('/connections/custom')
+        .set('Cookie', sid)
+        .type('form')
+        .send({
+          name: 'work',
+          url: 'https://own.example.org/gitea/',
+          token: 'own-fixture-token',
+          csrf,
+        });
+      expect(connected.status).toBe(302);
+      expect(customRequest.mock.calls[0]?.[0].href).toBe(
+        'https://own.example.org/gitea/api/v1/user',
+      );
+      expect(store.connection(identity.owner).customUrl).toBe(
+        'https://own.example.org/gitea',
+      );
+      expect(
+        JSON.stringify(
+          store.db.prepare('SELECT secret FROM connections').get(),
+        ),
+      ).not.toContain('own-fixture-token');
+      expect(
+        JSON.stringify(
+          store.db.prepare('SELECT secret FROM connections').get(),
+        ),
+      ).not.toContain('own.example.org');
+      expect(
+        await service.execute(identity, 'get_authenticated_user', {}),
+      ).toHaveProperty('data.login', 'own-user');
+      await expect(
+        service.execute(
+          { ...identity, owner: 'other' },
+          'get_authenticated_user',
+          { instance: 'custom-work' },
+        ),
+      ).rejects.toThrow('CONNECTION_REQUIRED');
+      store.connect(
+        'other',
+        'custom-work',
+        JSON.stringify({
+          token: 'other-fixture-token',
+          customUrl: 'https://other.example.net',
+        }),
+      );
+      await service.execute(
+        { ...identity, owner: 'other' },
+        'get_authenticated_user',
+        { instance: 'custom-work' },
+      );
+      expect(customRequest.mock.calls.at(-1)?.[0].origin).toBe(
+        'https://other.example.net',
+      );
+      expect(store.connection(identity.owner, 'custom-work').customUrl).toBe(
+        'https://own.example.org/gitea',
+      );
+      const staged = await service.execute(identity, 'create_issue', {
+        owner: 'alice',
+        repo: 'test',
+        title: 'Own server write',
+      });
+      expect(staged.status).toBe('approval_required');
+      expect(
+        JSON.stringify(await service.execute(identity, 'list_instances', {})),
+      ).not.toContain('fixture-token');
+      const disconnected = await h
+        .post('/connections/disconnect')
+        .set('Cookie', sid)
+        .type('form')
+        .send({ instance: 'custom-work', csrf });
+      expect(disconnected.status).toBe(302);
+      expect(() => store.connection(identity.owner, 'custom-work')).toThrow(
+        'CONNECTION_REQUIRED',
+      );
+      expect(store.connection('other', 'custom-work').token).toBe(
+        'other-fixture-token',
+      );
+    } finally {
+      store.close();
+    }
+  });
+  it('denies self-service without write scope, CSRF, operator permission or safe URL', async () => {
+    const customRequest = vi.fn<Requester>(async () =>
+      response({ login: 'own-user' }),
+    );
+    const { h, store } = setup(undefined, [], true, customRequest);
+    try {
+      const { sid, csrf } = await login(h);
+      const payload = {
+        name: 'work',
+        url: 'https://own.example.org',
+        token: 'fixture-token',
+        csrf,
+      };
+      expect(
+        (
+          await h
+            .post('/connections/custom')
+            .set('Cookie', sid)
+            .type('form')
+            .send({ ...payload, csrf: 'wrong' })
+        ).status,
+      ).toBe(403);
+      expect(
+        (await h.post('/connections/custom').type('form').send(payload)).status,
+      ).toBe(401);
+      for (const url of [
+        'https://127.0.0.1',
+        'https://10.1.2.3',
+        'https://own.example.org:3000',
+        'http://own.example.org',
+      ])
+        expect(
+          (
+            await h
+              .post('/connections/custom')
+              .set('Cookie', sid)
+              .type('form')
+              .send({ ...payload, url })
+          ).status,
+        ).toBe(400);
+      expect(customRequest).not.toHaveBeenCalled();
+    } finally {
+      store.close();
+    }
+    const disabled = setup(undefined, [], false, customRequest);
+    try {
+      const { sid, csrf } = await login(disabled.h);
+      expect(
+        (
+          await disabled.h
+            .post('/connections/custom')
+            .set('Cookie', sid)
+            .type('form')
+            .send({
+              name: 'work',
+              url: 'https://own.example.org',
+              token: 'fixture-token',
+              csrf,
+            })
+        ).status,
+      ).toBe(403);
+    } finally {
+      disabled.store.close();
+    }
+  });
   it('serves local branding without allowing scripts or external resources', async () => {
     const { h, store, app } = setup();
     try {

@@ -2,6 +2,16 @@
 
 Start: 21.10.2026. Abschließender geprüfter Meilenstein: **98 %**.
 
+## Einrichtung aus ChatGPT (21.10.2026)
+
+- `connection_setup` liefert einen geschützten Einrichtungslink, optional mit vorausgefüllter öffentlicher `serverUrl`. Plugin-Skill, Standardprompt und MCP-Instruktionen führen durch Einrichtung und anschließende tatsächliche Verbindungsprüfung. Endnutzer müssen weder Docker noch `.env` konfigurieren; der Betreiber stellt den gemeinsamen MCP-Dienst einmal bereit.
+- Neues CSRF-/Scope-geschütztes Formular verbindet eigene öffentliche Gitea-Server ohne Betreiber-Listenänderung. Adresse und PAT werden gemeinsam pro Benutzer/Instanz AEAD-verschlüsselt gespeichert. Maximal 20 Verbindungen als Grenze für weitere Selbsteinrichtung, reservierte Betreiber-IDs, sichere Trennung und bestehende exakte Schreibfreigaben bleiben wirksam. `ALLOW_USER_SERVERS=false` sperrt Selbsteinrichtung und deren bestehende Verbindungen.
+- Eigener Netzwerkpfad erlaubt ausschließlich öffentliches HTTPS auf Port 443 und übernimmt niemals Betreiber-CIDR-Ausnahmen. Private/Loopback/Link-Local-Ziele, URL-Credentials, Redirects und DNS-Rebinding bleiben gesperrt. Keine Tokens als MCP-Parameter; die menschliche Formularbestätigung bestimmt das tatsächliche Ziel.
+- `pnpm check`: **530 Tests erfolgreich**, sieben echte E2E-Fälle im Standardlauf ausdrücklich übersprungen; 159 Tool-Schemas, Format/Lint/Typen und Produktionsbuild erfolgreich. Kernabdeckung Statements **98,18 %**, Branches **94,64 %**, Functions **100 %**, Lines **99,01 %**.
+- Separates `pnpm test:e2e`: **7/7 echte Gitea-/Runner-E2E-Fälle erfolgreich**, insgesamt **537 unterschiedliche Tests**. Der neue Fall liefert den Einrichtungslink über MCP, verbindet ein Konto im geschützten Formular, liest den tatsächlichen Gitea-Benutzer, erstellt nach exakter Freigabe ein privates Repository über diese neue Verbindung und trennt sie wieder. HTTP-/Auth-Testinjektionen gelten ausschließlich im isolierten Testharness, nicht im Produkt.
+- [Deutsche Nutzeranleitung](de/CHATGPT-EINRICHTUNG.md) und [englische Nutzeranleitung](en/CHATGPT-SETUP.md) ergänzt; Betreiber- und Sicherheitsdokumentation angepasst. Frei gewählte Server nutzen aktuell PAT im geschützten Formular. Gitea-OAuth benötigt weiterhin eine auf der jeweiligen Instanz registrierte und vom Betreiber konfigurierte App.
+- **Nicht verifiziert:** tatsächliche Plugin-Installation und Einrichtung im ChatGPT-Konto. Es gibt weiterhin keinen bereitgestellten produktiven MCP-Endpunkt. Die Plattform benötigt eine erreichbare MCP-Verbindung; GitHub-Paketierung stellt kein Hosting bereit. Gesamtfortschritt bleibt deshalb **98 %**.
+
 ## Produktionspaket und Branding (21.10.2026)
 
 - Standard-Compose verwendet ein ausdrücklich versionsgebundenes GHCR-Image und `NODE_ENV=production`; eigener Quellcode-Build ist ein separates Override. Non-Root, schreibgeschütztes Root-Dateisystem, Init-Prozess, Prozesslimit, Logrotation und persistentes Datenvolume sind eingerichtet.
