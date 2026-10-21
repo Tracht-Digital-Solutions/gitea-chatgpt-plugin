@@ -1,5 +1,13 @@
 import { z } from 'zod';
 
+export const defaultGiteaScopes = [
+  'read:user',
+  'read:repository',
+  'write:repository',
+  'read:issue',
+  'write:issue',
+];
+
 const httpsUrl = z
   .url()
   .refine((v) => new URL(v).protocol === 'https:', 'HTTPS required');
@@ -9,6 +17,29 @@ export const instanceSchema = z
     url: httpsUrl,
     oauthClientId: z.string().min(1).optional(),
     oauthClientSecret: z.string().min(1).optional(),
+    oauthScopes: z
+      .array(
+        z.enum([
+          'read:user',
+          'write:user',
+          'read:repository',
+          'write:repository',
+          'read:issue',
+          'write:issue',
+          'read:organization',
+          'write:organization',
+          'read:package',
+          'write:package',
+        ]),
+      )
+      .min(1)
+      .max(10)
+      .refine(
+        (v) =>
+          new Set(v).size === v.length &&
+          v.some((s) => s === 'read:user' || s === 'write:user'),
+      )
+      .optional(),
   })
   .strict();
 export type Instance = z.infer<typeof instanceSchema>;

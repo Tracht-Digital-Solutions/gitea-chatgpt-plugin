@@ -8,6 +8,8 @@ A self-hosted Node.js 24/TypeScript MCP server and portable Agent Plugins packag
 
 ## Install
 
+New on main: [complete issue/project fields, organizations, repository creation, generic packages, sprint milestones, releases and wiki](PARAMETER-AND-FUNCTION-VERIFICATION.md), plus real isolated runner execution/rerun/cancellation tests. These additions are not yet part of v0.2.0.
+
 Available from v0.2.0: [Actions control, projects/Kanban, and time tracking](PROJECTS-ACTIONS-TIME.md), with exact browser approval for mutations.
 
 ```bash
@@ -31,7 +33,7 @@ Run `pnpm package` to create the portable ZIP. Set `MCP_PUBLIC_URL=https://<your
 
 ## Features and limits
 
-Repositories, details/statistics, safe settings, branches/tags, file creation/update/delete commits, commit history/diffs, comparisons, issues/search/comments/assignees/labels/milestones/dependencies, pull requests/files/diffs/reviews/approved merges, releases/tags, and available Actions workflows/runs/jobs/logs. Content and commit-message searches are bounded and explicitly non-exhaustive. Optional endpoints may be unavailable on older/restricted instances. No admin, runner, webhook or permission-changing public tools.
+Repositories, details/statistics, safe settings, branches/tags, file creation/update/delete commits, commit history/diffs, comparisons, issues/search/comments/assignees/labels/milestones/dependencies, pull requests/files/diffs/reviews/approved merges, releases/tags, and available Actions workflows/runs/jobs/logs. Content and commit-message searches are bounded and explicitly non-exhaustive. Optional endpoints may be unavailable on older/restricted instances. No site-admin, runner-administration or webhook tools. Organization creation includes an explicitly approved delegation setting.
 
 File changes require a known unprotected feature branch and current blob SHA for replacement/deletion. Every mutation first returns an approval URL; the human signs in and approves the exact payload, then the client repeats identical arguments with `approvalId`. Approval is single-use, user/instance/credential-bound and expires after ten minutes. Failed writes require a fresh approval.
 

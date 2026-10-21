@@ -6,6 +6,8 @@ Provide an HTTPS MCP origin and a trusted OAuth/OIDC provider (for example self-
 
 ## OAuth provider
 
+For Gitea OAuth, explicitly configure per-instance `oauthScopes` when organization/package/personal-project tasks require extra permissions, then reconnect through the portal. Defaults are not automatically expanded; `all` and admin scopes are rejected. See the [scope example and parameter matrix](PARAMETER-AND-FUNCTION-VERIFICATION.md).
+
 Register two public Authorization Code clients, both requiring S256-PKCE:
 
 - `gitea-chatgpt`: exact callback displayed by the actual ChatGPT/Codex connection; no wildcard redirects.

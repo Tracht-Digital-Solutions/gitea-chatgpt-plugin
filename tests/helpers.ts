@@ -20,6 +20,7 @@ export const config: Config = {
       url: 'https://other.example.org',
       oauthClientId: 'gitea-client',
       oauthClientSecret: 'test-client-secret',
+      oauthScopes: ['read:user', 'write:organization', 'write:package'],
     },
   ],
   privateCidrs: [],

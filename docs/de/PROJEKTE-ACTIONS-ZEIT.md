@@ -62,6 +62,8 @@ Manuelle Buchungen erfolgen für den authentifizierten Gitea-Benutzer; eine Buch
 
 ## Nachweise und Grenzen
 
+Aktualisierter Nachweis: [Parameter- und Funktionsprüfung](PARAMETER-UND-FUNKTIONSPRUEFUNG.md) beschreibt echte Runnerausführung einschließlich Wiederholungen sowie echte Organisations-/Benutzerprojektprüfungen. Der folgende Absatz dokumentiert den früheren Stand von v0.2.0.
+
 Die Tests prüfen API-Verträge, Eingaben, Scopes, Mandantentrennung, Schreibfreigabe und Wiederholungsschutz für jedes neue Tool. Ein isolierter Gitea-28.2.0-Test über den MCP-Client prüft Repository-Kanban mit Kartenverschiebung, Zeitbuchung/-löschung, Stoppuhren sowie Workflow-Aktivierung, Dispatch und regulären Abbruch. Eine Runnerausführung oder ein echtes Deployment wird dabei nicht ausgelöst; Wiederholung von Jobs ist vertraglich und mit simulierten Antworten geprüft. Organisations-/Benutzerprojektverträge sind geprüft, ohne vollständige reale Kontoabnahme dieser beiden Bereiche.
 
 HTTP 404 bedeutet „nicht vorhanden, nicht unterstützt oder nicht zugänglich“ und keine pauschale Aussage über eine bestimmte Version. Es gibt keine Browser-Scraping-Ausweichlösung und keine Umgehung von Berechtigungen. Die echte ChatGPT-/Codex-Kontoverbindung bleibt bis zu deinem Deployment unbestätigt. [Prüfstand](../PROGRESS.md).

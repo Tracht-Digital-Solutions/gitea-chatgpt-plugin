@@ -89,7 +89,7 @@ describe('tool catalog and authorization', () => {
       config,
       store,
       async (_url, method, _headers, body) => {
-        calls.push({ method, body });
+        calls.push({ method, body: body?.toString() });
         return method === 'GET'
           ? response({
               head: { sha: 'a'.repeat(40) },

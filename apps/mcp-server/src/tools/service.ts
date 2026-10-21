@@ -86,6 +86,21 @@ export class ToolService {
             String(p.repo),
             String(p.branch),
           );
+        if (name === 'update_issue' && p.content_version !== undefined) {
+          const current = (
+            await client.call({
+              path:
+                '/repos/' +
+                encodeURIComponent(String(p.owner)) +
+                '/' +
+                encodeURIComponent(String(p.repo)) +
+                '/issues/' +
+                Number(p.index),
+            })
+          ).data as { content_version?: number };
+          if (current.content_version !== p.content_version)
+            throw new SafeError('ISSUE_CHANGED_OR_VERSION_UNSUPPORTED', 409);
+        }
         if (name === 'merge_pull_request') {
           const result = (
             await client.call({

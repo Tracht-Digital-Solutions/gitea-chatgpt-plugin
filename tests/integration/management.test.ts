@@ -95,7 +95,7 @@ describe('Actions, projects and time management', () => {
         config,
         store,
         async (url, method, _headers, body) => {
-          calls.push({ path: url.pathname, method, body });
+          calls.push({ path: url.pathname, method, body: body?.toString() });
           return response({ fixture: true });
         },
       );
