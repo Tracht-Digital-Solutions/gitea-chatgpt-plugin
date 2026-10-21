@@ -1,6 +1,6 @@
 # Parameter and function verification
 
-[Deutsch](../de/PARAMETER-UND-FUNKTIONSPRUEFUNG.md). Updated 2026-10-21. These additions are on main for the next release and are not included in v0.2.0.
+[Deutsch](../de/PARAMETER-UND-FUNKTIONSPRUEFUNG.md). Updated 2026-10-21. These additions are available from v0.3.0.
 
 Reference: the [Gitea 28 API](https://docs.gitea.com/api/), [OpenAPI specification](https://docs.gitea.com/openapi3-28.json), and [generic package protocol](https://docs.gitea.com/usage/packages/generic/). Complete field coverage means the documented create/edit payloads of this version, not every response property or future API. Inputs retain bounded types, lengths, and ranges.
 
