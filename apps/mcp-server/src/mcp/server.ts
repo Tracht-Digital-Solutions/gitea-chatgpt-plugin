@@ -46,10 +46,29 @@ export function createMcpServer(
         } catch (error) {
           const auth =
             error instanceof SafeError &&
-            (error.status === 401 || error.code === 'INSUFFICIENT_SCOPE');
+            [
+              'INVALID_ACCESS_TOKEN',
+              'ACCESS_TOKEN_EXPIRED',
+              'INSUFFICIENT_SCOPE',
+            ].includes(error.code);
+          const reconnect =
+            error instanceof SafeError &&
+            error.status === 401 &&
+            error.code.startsWith('GITEA_');
           return {
             isError: true,
-            content: [{ type: 'text', text: safeCode(error) }],
+            content: [
+              {
+                type: 'text',
+                text:
+                  safeCode(error) +
+                  (reconnect
+                    ? '. Reconnect your Gitea instance in ' +
+                      service.config.publicUrl +
+                      '/portal'
+                    : ''),
+              },
+            ],
             ...(auth
               ? {
                   _meta: {
