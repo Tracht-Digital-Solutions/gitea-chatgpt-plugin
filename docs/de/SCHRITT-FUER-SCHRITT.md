@@ -1,6 +1,6 @@
 # Schritt für Schritt: installieren, einrichten und testen
 
-[English](../en/STEP-BY-STEP.md) · Stand: 21.10.2026 · Software: v0.3.2.
+[English](../en/STEP-BY-STEP.md) · Stand: 21.10.2026 · Software: v0.4.0.
 
 Für die Installation ohne Git und lokalen Build: [Produktionspaket einrichten](PRODUKTION.md). Der Standard-Compose verwendet ein veröffentlichtes Image und `NODE_ENV=production`. Behalte `GITEA_MCP_VERSION` aus der zum Release gehörenden `.env.example`; nach einem Upgrade diese Versionsnummer bewusst aktualisieren. Ein eigener Build benötigt zusätzlich `docker-compose.build.yml`.
 
@@ -34,7 +34,7 @@ Lege DNS-Einträge und Zertifikate für deine tatsächlichen Hosts an. Ein öffe
 ```bash
 git clone https://github.com/jtracht/gitea-chatgpt-plugin.git
 cd gitea-chatgpt-plugin
-git switch --detach v0.3.2
+git switch --detach v0.4.0
 docker version
 docker compose version
 ```
@@ -216,7 +216,7 @@ Ab v0.2.0 kannst du zusätzlich [Actions steuern, Kanban-Projekte verwalten und 
 
 ## 13. Optional: portables Paket oder Codex
 
-Das [Release-ZIP](https://github.com/jtracht/gitea-chatgpt-plugin/releases/tag/v0.3.2) enthält eine HTTPS-URL-Vorlage. Unterstützt dein Client diese Vorlage nicht, erstelle ein Paket für deinen eigenen Endpunkt:
+Das [Release-ZIP](https://github.com/jtracht/gitea-chatgpt-plugin/releases/tag/v0.4.0) enthält eine HTTPS-URL-Vorlage. Unterstützt dein Client diese Vorlage nicht, erstelle ein Paket für deinen eigenen Endpunkt:
 
 ```bash
 pnpm install --frozen-lockfile

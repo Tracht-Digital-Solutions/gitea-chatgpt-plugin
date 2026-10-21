@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/jtracht/gitea-chatgpt-plugin/compare/v0.3.3...v0.4.0) (2026-10-21)
+
+
+### Features
+
+* **auth:** add ChatGPT guided self-service Gitea setup ([#26](https://github.com/jtracht/gitea-chatgpt-plugin/issues/26)) ([ad0ff00](https://github.com/jtracht/gitea-chatgpt-plugin/commit/ad0ff007330032fb2b0f76bbe6587d4ee21ec279))
+
 ## [0.3.3](https://github.com/jtracht/gitea-chatgpt-plugin/compare/v0.3.2...v0.3.3) (2026-10-21)
 
 
