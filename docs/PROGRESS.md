@@ -22,6 +22,13 @@ Die terminale Releaseabnahme umfasst zusätzlich die vom Auftrag verlangte tats�
 
 ## Bisherige Prüfungen
 
+### Einrichtung mit eigenem Gitea-Server, 21.10.2026
+
+- Die ausgelieferte Konfiguration enthält keine vorkonfigurierte Gitea-Instanz: `GITEA_INSTANCES=[]`. Der Dienst kann mit leerer Liste starten und zeigt im Browserportal die Einrichtung des eigenen Servers an. Eigene HTTPS-Hosts werden weiterhin ausdrücklich durch den Betreiber freigegeben.
+- Deutsche und englische Einrichtung erklären die eigene Serveradresse und mehrere Instanzen. Kein Gitea-Host wird implizit ausgewählt oder automatisch kontaktiert. Eine nicht freigegebene Instanz bleibt auch bei leerer Liste gesperrt.
+- `pnpm check` erfolgreich: **507 Tests bestanden**, sechs separate Gitea-/Runner-E2E-Fälle im Standardlauf bewusst übersprungen, 159 Schemas und Produktionsbuild erfolgreich. Ein neuer Integrationstest prüft den leeren Einrichtungszustand und verhindert API-Aufrufe an nicht konfigurierte Server. Kern-Zeilenabdeckung **98,96 %**.
+- Gesamtfortschritt weiterhin **98 %**; die produktive Kontoabnahme bleibt zurückgestellt. Frühere Release-Tags und Commits sind historische Stände und werden durch eine neue Konfiguration nicht rückwirkend verändert.
+
 ### Vollständige Parameter und Veröffentlichungsfunktionen, 21.10.2026
 
 - 30 weitere Tools, insgesamt **159** validierte MCP-Schemas. Vollständige Create-/Edit-Felder für Issues, Projekte, Organisationen, Repositoryerstellung, Releases, Meilensteine und Wiki gegen die offizielle Gitea-28-Spezifikation abgeglichen. 13 eigene Feldabdeckungsprüfungen und **151** direkte API-Vertragsprüfungen. Labels, Deadline, Pins, Sperren und Abhängigkeiten über die jeweils vorgesehenen Endpunkte.

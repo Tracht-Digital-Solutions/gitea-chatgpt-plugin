@@ -186,6 +186,7 @@ describe('configuration and limits', () => {
       GITEA_INSTANCES: JSON.stringify(config.instances),
     };
     expect(loadConfig(env).instances).toEqual(config.instances);
+    expect(loadConfig({ ...env, GITEA_INSTANCES: '[]' }).instances).toEqual([]);
     expect(
       loadConfig({
         ...env,
