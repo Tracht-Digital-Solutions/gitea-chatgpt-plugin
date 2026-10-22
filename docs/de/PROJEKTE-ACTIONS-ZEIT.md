@@ -4,9 +4,9 @@
 
 ## Sicherheit und Einrichtung
 
-Zuerst die [Schritt-für-Schritt-Einrichtung](SCHRITT-FUER-SCHRITT.md) abschließen und einen Build mit diesen neuen Tools installieren. Alle Schreiboperationen benötigen `gitea.write`, die passenden Gitea-Rechte und die unabhängige Browserfreigabe der exakten Argumente. Lesende Tools benötigen `gitea.read`. Das Gitea-Token muss zusätzlich die passenden Actions-/Repository-/Issue-/Projektberechtigungen seiner Version besitzen. Organisations- und Benutzerprojekte können zusätzliche Organisations-/Benutzerrechte erfordern. Verwende keine pauschalen Adminrechte; ein verweigerter API-Aufruf wird nicht umgangen.
+Zuerst die [Schritt-für-Schritt-Einrichtung](SCHRITT-FUER-SCHRITT.md) abschließen und einen Build mit diesen neuen Tools installieren. Alle Schreiboperationen benötigen `gitea.write`, und die passenden Gitea-Rechte; mit `REQUIRE_WRITE_APPROVAL=true` zusätzlich die unabhängige Browserfreigabe der exakten Argumente. Lesende Tools benötigen `gitea.read`. Das Gitea-Token muss zusätzlich die passenden Actions-/Repository-/Issue-/Projektberechtigungen seiner Version besitzen. Organisations- und Benutzerprojekte können zusätzliche Organisations-/Benutzerrechte erfordern. Verwende keine pauschalen Adminrechte; ein verweigerter API-Aufruf wird nicht umgangen.
 
-Freigabeablauf: Tool zuerst ohne `approvalId` aufrufen, zurückgegebenen Link selbst öffnen, die konkrete Änderung prüfen und bestätigen, anschließend denselben Aufruf mit der zurückgegebenen ID wiederholen. Freigaben gelten einmalig, zehn Minuten und nur für denselben Benutzer, dieselbe Verbindung und identische Argumente. Das Plugin startet keine Änderungen durch bloßes Lesen.
+Freigabeablauf (nur mit `REQUIRE_WRITE_APPROVAL=true`, sonst wird direkt ausgeführt): Tool zuerst ohne `approvalId` aufrufen, zurückgegebenen Link selbst öffnen, die konkrete Änderung prüfen und bestätigen, anschließend denselben Aufruf mit der zurückgegebenen ID wiederholen. Freigaben gelten einmalig, zehn Minuten und nur für denselben Benutzer, dieselbe Verbindung und identische Argumente. Das Plugin startet keine Änderungen durch bloßes Lesen.
 
 ## Actions steuern
 

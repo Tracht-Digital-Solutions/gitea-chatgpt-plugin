@@ -225,6 +225,34 @@ describe('tool catalog and authorization', () => {
     ).rejects.toThrow('HUMAN_APPROVAL');
     store.close();
   });
+  it('executes writes directly when browser approval is disabled', async () => {
+    const store = new Store(':memory:', config.encryptionKey);
+    store.connect(
+      identity.owner,
+      'alpha',
+      JSON.stringify({ token: 'private' }),
+    );
+    const request = vi.fn(async () => response({ number: 1 }));
+    const service = new ToolService(
+      { ...config, requireWriteApproval: false },
+      store,
+      request,
+    );
+    const p = { owner: 'alice', repo: 'demo', title: 'Fix' };
+    await expect(
+      service.execute(
+        { ...identity, scopes: ['gitea.read'] },
+        'create_issue',
+        p,
+      ),
+    ).rejects.toThrow('INSUFFICIENT_SCOPE');
+    const result = await service.execute(identity, 'create_issue', p);
+    expect(result).not.toHaveProperty('status', 'approval_required');
+    expect(result).toHaveProperty('untrustedContent', true);
+    expect(request).toHaveBeenCalledTimes(1);
+    expect(store.db.prepare('SELECT * FROM approvals').all()).toEqual([]);
+    store.close();
+  });
   it('guards file branches and current PR head before writing', async () => {
     const { store } = setup();
     const request = vi.fn(async () =>

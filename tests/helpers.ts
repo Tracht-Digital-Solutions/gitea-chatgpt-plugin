@@ -25,6 +25,7 @@ export const config: Config = {
   ],
   privateCidrs: [],
   allowUserServers: false,
+  requireWriteApproval: true,
 };
 export const identity: Identity = {
   owner: 'test-user-a',

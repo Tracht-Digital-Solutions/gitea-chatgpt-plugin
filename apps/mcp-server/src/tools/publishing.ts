@@ -91,7 +91,7 @@ export function registerPublishingTools(add: RegisterOperation): void {
   );
   add(
     'unpin_issue',
-    'Remove an issue pin.',
+    'Remove the pin from a repository issue.',
     issue,
     (p) => ({ path: issueRoot(p) + '/pin', method: 'DELETE' }),
     true,

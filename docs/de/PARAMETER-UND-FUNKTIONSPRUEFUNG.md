@@ -60,7 +60,7 @@ Release-Erstellung unterstützt alle Felder von `CreateReleaseOption`: `tag_name
 
 ## Rechte und reproduzierbare Prüfung
 
-Zusätzlich zu MCP-Scopes und unabhängiger Browserfreigabe gelten Gitea-Rechte. Organisationserstellung kann `write:organization`, Packageveröffentlichung `write:package`, eigene Benutzerprojekte/Repositoryerstellung `write:user` verlangen. Repositories, Actions und Wikis benötigen entsprechende Repositoryrechte, Tickets entsprechende Issuerechte. Eine verweigerte Operation bleibt verweigert; Site-Adminrechte sind dafür nicht pauschal nötig.
+Zusätzlich zu MCP-Scopes und, bei `REQUIRE_WRITE_APPROVAL=true`, unabhängiger Browserfreigabe gelten Gitea-Rechte. Organisationserstellung kann `write:organization`, Packageveröffentlichung `write:package`, eigene Benutzerprojekte/Repositoryerstellung `write:user` verlangen. Repositories, Actions und Wikis benötigen entsprechende Repositoryrechte, Tickets entsprechende Issuerechte. Eine verweigerte Operation bleibt verweigert; Site-Adminrechte sind dafür nicht pauschal nötig.
 
 Bei Gitea-OAuth lässt sich die zusätzliche Berechtigung **ausdrücklich pro Instanz** konfigurieren, etwa:
 

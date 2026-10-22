@@ -91,11 +91,7 @@ function add(
 ): void {
   operations.push({
     name,
-    description:
-      description +
-      (write
-        ? ' Stage a concrete change; browser approval and a second identical call with approvalId are required.'
-        : ''),
+    description,
     schema: z
       .object({
         instance: z
@@ -507,7 +503,7 @@ add(
 );
 add(
   'delete_milestone',
-  'Delete a milestone.',
+  'Delete a repository milestone; its issues remain.',
   { ...repo, id },
   (p) => ({ path: root(p) + '/milestones/' + enc(p.id), method: 'DELETE' }),
   true,

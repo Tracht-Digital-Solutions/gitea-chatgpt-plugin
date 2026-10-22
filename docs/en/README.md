@@ -2,7 +2,7 @@
 
 [Deutsch](../../README.md) · Apache-2.0
 
-Self-hosted TypeScript MCP server and portable plugin with 159 tools for Gitea repositories, files, issues, pull requests, Actions, Kanban, time tracking, organizations, packages, milestones, releases and wiki. Writes need exact independent human approval.
+Self-hosted TypeScript MCP server and portable plugin with 159 tools for Gitea repositories, files, issues, pull requests, Actions, Kanban, time tracking, organizations, packages, milestones, releases and wiki. Writes run directly by default; `REQUIRE_WRITE_APPROVAL=true` requires exact independent human approval.
 
 ## Scripted installation
 

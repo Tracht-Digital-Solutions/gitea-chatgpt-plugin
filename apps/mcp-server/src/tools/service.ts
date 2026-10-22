@@ -75,7 +75,7 @@ export class ToolService {
     try {
       if (operation.write) {
         // Resolving the active instance now binds the approval to that connection even when input omits it.
-        if (!approvalId) {
+        if (this.config.requireWriteApproval && !approvalId) {
           const id = this.store.stage(
             identity.owner,
             conn.instance,
@@ -93,14 +93,15 @@ export class ToolService {
               'The account owner must inspect and approve the exact payload in the browser. Then repeat this tool with identical arguments and approvalId.',
           };
         }
-        this.store.consume(
-          identity.owner,
-          approvalId as string,
-          conn.instance,
-          conn.revision,
-          name,
-          payload,
-        );
+        if (this.config.requireWriteApproval)
+          this.store.consume(
+            identity.owner,
+            approvalId as string,
+            conn.instance,
+            conn.revision,
+            name,
+            payload,
+          );
         if (operation.featureBranch)
           await client.assertFeatureBranch(
             String(p.owner),

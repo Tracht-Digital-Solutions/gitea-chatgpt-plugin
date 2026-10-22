@@ -87,7 +87,7 @@ Die Anwendung lädt Umgebungsvariablen; für lokale `.env`-Dateien z. B. `node -
 
 ## 6. Verbindung prüfen
 
-Discovery per HTTPS abrufen, dann MCP Inspector oder kompatiblen Client mit OAuth und passender Audience verbinden. `list_instances` ausführen, `/portal` im Browser öffnen, Gitea verbinden, `connection_status`, `list_repositories` und `read_file` testen. Einen Schreibauftrag in einem eigenen Testrepository vorbereiten, Payload im Portal prüfen und freigeben, denselben Tool-Aufruf mit `approvalId` wiederholen. Ein zweiter Aufruf muss Replay verweigern. Keine Tests gegen fremde echte Repositories ausführen.
+Discovery per HTTPS abrufen, dann MCP Inspector oder kompatiblen Client mit OAuth und passender Audience verbinden. `list_instances` ausführen, `/portal` im Browser öffnen, Gitea verbinden, `connection_status`, `list_repositories` und `read_file` testen. Einen Schreibauftrag in einem eigenen Testrepository ausführen. Mit `REQUIRE_WRITE_APPROVAL=true`: Auftrag vorbereiten, Payload im Portal prüfen und freigeben, denselben Tool-Aufruf mit `approvalId` wiederholen. Ein zweiter Aufruf muss Replay verweigern. Keine Tests gegen fremde echte Repositories ausführen.
 
 ## 7. Updates, Backup, Rollback
 

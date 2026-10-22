@@ -4,7 +4,7 @@
 
 [English](docs/en/README.md) · Apache-2.0
 
-Open-Source-MCP-Server und portables Plugin zur Verwaltung eigener Gitea-Instanzen mit ChatGPT und kompatiblen Codex-Clients. 159 typisierte Tools für Repositories, Dateien, Issues, Pull Requests, Reviews, Actions, Kanban-Projekte, Zeiterfassung, Organisationen, Packages, Sprint-Meilensteine, Gitea-Releases und Wiki. Schreibende Aktionen verlangen eine separate menschliche Freigabe.
+Open-Source-MCP-Server und portables Plugin zur Verwaltung eigener Gitea-Instanzen mit ChatGPT und kompatiblen Codex-Clients. 159 typisierte Tools für Repositories, Dateien, Issues, Pull Requests, Reviews, Actions, Kanban-Projekte, Zeiterfassung, Organisationen, Packages, Sprint-Meilensteine, Gitea-Releases und Wiki. Schreibende Aktionen werden standardmäßig direkt ausgeführt; mit `REQUIRE_WRITE_APPROVAL=true` verlangen sie eine separate menschliche Freigabe.
 
 ## Installation per Skript
 
@@ -37,6 +37,6 @@ pnpm test:e2e
 
 CI prüft Typen, Lint, Format, Coverage, MCP-Schemas, Build, Docker und das lokale Installationspaket. Security prüft Dependencies, Secrets, CodeQL und Container. Release-/Publish-Automatisierung wurde entfernt. Git-Historie und Tags bleiben als Quellcode-Nachweise erhalten.
 
-OAuth, verschlüsselte Mandantentrennung, SSRF-/DNS-Rebinding-Schutz und konkrete Einmalfreigaben bleiben verpflichtend. [Deployment](docs/DEPLOYMENT.md), [Sicherheitsmodell](docs/SECURITY.md), [Fortschritt](docs/PROGRESS.md), [Mitwirken](CONTRIBUTING.md), [Lizenz](LICENSE).
+OAuth, verschlüsselte Mandantentrennung und SSRF-/DNS-Rebinding-Schutz bleiben verpflichtend; konkrete Einmalfreigaben sind optional per `REQUIRE_WRITE_APPROVAL=true`. [Deployment](docs/DEPLOYMENT.md), [Sicherheitsmodell](docs/SECURITY.md), [Fortschritt](docs/PROGRESS.md), [Mitwirken](CONTRIBUTING.md), [Lizenz](LICENSE).
 
 [Parameter- und Funktionsumfang](docs/de/PARAMETER-UND-FUNKTIONSPRUEFUNG.md) · [Actions, Projekte und Zeit](docs/de/PROJEKTE-ACTIONS-ZEIT.md). GitHub-Quellcode und lokale Pakete bedeuten keine Freigabe im offiziellen Plugin-Verzeichnis.

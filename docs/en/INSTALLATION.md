@@ -31,6 +31,7 @@ Edit `.env` using your actual addresses. Placeholder hosts are rejected by the i
 - `GITEA_INSTANCES`: JSON array of your own servers. No server is preconfigured.
 - `ALLOW_USER_SERVERS=false`: default, configure servers in this file. Optional `true` enables extra public server registration in the portal.
 - `ALLOWED_PRIVATE_CIDRS`: minimal explicit exceptions for configured internal servers, otherwise empty.
+- `REQUIRE_WRITE_APPROVAL=false`: default, writes run without browser approval. `true` requires an exact single-use approval per write.
 - `DATABASE_PATH`: keep container default `data/gitea.sqlite`.
 
 Example, replace the host:
@@ -38,6 +39,7 @@ Example, replace the host:
 ```dotenv
 GITEA_INSTANCES=[{"id":"my-server","url":"https://YOUR-GITEA-HOST"}]
 ALLOW_USER_SERVERS=false
+REQUIRE_WRITE_APPROVAL=false
 ```
 
 The default requires at least one actual server. Add more objects for multiple servers. Gitea OAuth optionally uses `oauthClientId`, `oauthClientSecret` and explicit `oauthScopes` per instance; keep secrets local. Alternatively enter a narrowly scoped personal Gitea token only in the protected portal, never in chat.
