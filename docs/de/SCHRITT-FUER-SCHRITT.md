@@ -32,7 +32,7 @@ Lege DNS-Einträge und Zertifikate für deine tatsächlichen Hosts an. Ein öffe
 ## 2. Repository holen und den geprüften Stand auswählen
 
 ```bash
-git clone https://github.com/jtracht/gitea-chatgpt-plugin.git
+git clone https://github.com/Tracht-Digital-Solutions/gitea-chatgpt-plugin.git
 cd gitea-chatgpt-plugin
 git switch --detach v0.4.0
 docker version
@@ -216,7 +216,7 @@ Ab v0.2.0 kannst du zusätzlich [Actions steuern, Kanban-Projekte verwalten und 
 
 ## 13. Optional: portables Paket oder Codex
 
-Das [Release-ZIP](https://github.com/jtracht/gitea-chatgpt-plugin/releases/tag/v0.4.0) enthält eine HTTPS-URL-Vorlage. Unterstützt dein Client diese Vorlage nicht, erstelle ein Paket für deinen eigenen Endpunkt:
+Das [Release-ZIP](https://github.com/Tracht-Digital-Solutions/gitea-chatgpt-plugin/releases/tag/v0.4.0) enthält eine HTTPS-URL-Vorlage. Unterstützt dein Client diese Vorlage nicht, erstelle ein Paket für deinen eigenen Endpunkt:
 
 ```bash
 pnpm install --frozen-lockfile

@@ -27,7 +27,7 @@ Create DNS records and certificates for your actual hosts. ChatGPT must be able 
 ## 2. Download the verified release
 
 ```bash
-git clone https://github.com/jtracht/gitea-chatgpt-plugin.git
+git clone https://github.com/Tracht-Digital-Solutions/gitea-chatgpt-plugin.git
 cd gitea-chatgpt-plugin
 git switch --detach v0.4.0
 docker version
@@ -211,7 +211,7 @@ From v0.2.0, also follow the [Actions, Kanban projects, and time tracking guide]
 
 ## 13. Optional: portable package or Codex
 
-The [release ZIP](https://github.com/jtracht/gitea-chatgpt-plugin/releases/tag/v0.4.0) contains an HTTPS URL template. If your client cannot resolve it, build a package for your endpoint:
+The [release ZIP](https://github.com/Tracht-Digital-Solutions/gitea-chatgpt-plugin/releases/tag/v0.4.0) contains an HTTPS URL template. If your client cannot resolve it, build a package for your endpoint:
 
 ```bash
 pnpm install --frozen-lockfile
