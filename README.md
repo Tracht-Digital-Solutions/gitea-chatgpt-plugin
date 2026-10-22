@@ -4,8 +4,8 @@
 
 **Produktionspaket:** Das Release enthält ein eigenständiges `gitea-deployment-VERSION.zip` mit versionsgebundener Docker-Konfiguration und deutscher/englischer Anleitung. [Produktionsinstallation](docs/de/PRODUKTION.md). Der Server läuft mit `NODE_ENV=production`; ein eigenes HTTPS-/OAuth-Deployment ist erforderlich.
 
-[![CI](https://github.com/jtracht/gitea-chatgpt-plugin/actions/workflows/ci.yml/badge.svg)](https://github.com/jtracht/gitea-chatgpt-plugin/actions/workflows/ci.yml)
-[![Security](https://github.com/jtracht/gitea-chatgpt-plugin/actions/workflows/security.yml/badge.svg)](https://github.com/jtracht/gitea-chatgpt-plugin/actions/workflows/security.yml)
+[![CI](https://github.com/Tracht-Digital-Solutions/gitea-chatgpt-plugin/actions/workflows/ci.yml/badge.svg)](https://github.com/Tracht-Digital-Solutions/gitea-chatgpt-plugin/actions/workflows/ci.yml)
+[![Security](https://github.com/Tracht-Digital-Solutions/gitea-chatgpt-plugin/actions/workflows/security.yml/badge.svg)](https://github.com/Tracht-Digital-Solutions/gitea-chatgpt-plugin/actions/workflows/security.yml)
 
 **Deutsch** · [English](docs/en/README.md)
 
@@ -41,7 +41,7 @@ Node.js 24 LTS und pnpm 11.25.0 für Entwicklung, alternativ Docker/Compose; ein
 **Du möchtest das Plugin in ChatGPT einrichten?** Nutze die [ChatGPT-Einrichtung](docs/de/CHATGPT-EINRICHTUNG.md): Plugin installieren, „Richte meinen Gitea-Server ein“ schreiben, eigenen Server im geschützten Dialog verbinden und zu ChatGPT zurückkehren. Endnutzer benötigen weder Docker noch `.env`. Der folgende Abschnitt richtet sich ausschließlich an Betreiber des gemeinsamen MCP-Dienstes. Ein produktiver MCP-Endpunkt dieses Projekts ist noch nicht bereitgestellt.
 
 ```bash
-git clone https://github.com/jtracht/gitea-chatgpt-plugin.git
+git clone https://github.com/Tracht-Digital-Solutions/gitea-chatgpt-plugin.git
 cd gitea-chatgpt-plugin
 cp .env.example .env
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"

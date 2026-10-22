@@ -47,18 +47,21 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - id: name
+        name: Lowercase image name
+        run: echo "image=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
       - id: image
         uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository }}:${{ inputs.tag }}
+          tags: ${{ steps.name.outputs.image }}:${{ inputs.tag }}
           provenance: true
           sbom: true
           labels: org.opencontainers.image.source=https://github.com/${{ github.repository }}
       - name: Verify published production image
         env:
-          DOCKER_TEST_IMAGE: ghcr.io/${{ github.repository }}:${{ inputs.tag }}
+          DOCKER_TEST_IMAGE: ${{ steps.name.outputs.image }}:${{ inputs.tag }}
         run: pnpm test:docker && pnpm test:deployment
       - name: Attach and verify release artifacts
         env:
@@ -82,4 +85,4 @@ jobs:
         # DISPATCH_TOKEN: fine-grained PAT with contents read & write on the marketplace repository.
         env:
           GH_TOKEN: ${{ secrets.DISPATCH_TOKEN }}
-        run: gh api repos/jtracht/chatgpt-plugin-marketplace/dispatches -f event_type=plugin-updated
+        run: gh api repos/Tracht-Digital-Solutions/chatgpt-plugin-marketplace/dispatches -f event_type=plugin-updated

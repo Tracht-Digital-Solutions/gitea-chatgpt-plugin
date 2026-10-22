@@ -4,17 +4,17 @@
   "version": "0.4.0",
   "description": "Manage your own Gitea instances through authenticated MCP tools with independent human approval for writes.",
   "author": {
-    "name": "jtracht"
+    "name": "Tracht Digital Solutions"
   },
   "license": "Apache-2.0",
-  "repository": "https://github.com/jtracht/gitea-chatgpt-plugin",
+  "repository": "https://github.com/Tracht-Digital-Solutions/gitea-chatgpt-plugin",
   "extensions": {
     "com.openai": {
       "interface": {
         "displayName": "Gitea for ChatGPT",
         "shortDescription": "Manage your Gitea projects",
         "longDescription": "Connect your self-hosted Gitea instances, inspect repositories and issues, and approve concrete changes through your own secure browser portal.",
-        "developerName": "jtracht",
+        "developerName": "Tracht Digital Solutions",
         "category": "Productivity",
         "capabilities": [
           "Read",

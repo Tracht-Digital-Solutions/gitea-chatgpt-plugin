@@ -17,7 +17,7 @@ From v0.3.0: [complete issue/project fields, organizations, repository creation,
 Available from v0.2.0: [Actions control, projects/Kanban, and time tracking](PROJECTS-ACTIONS-TIME.md), with exact browser approval for mutations.
 
 ```bash
-git clone https://github.com/jtracht/gitea-chatgpt-plugin.git
+git clone https://github.com/Tracht-Digital-Solutions/gitea-chatgpt-plugin.git
 cd gitea-chatgpt-plugin
 cp .env.example .env
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"

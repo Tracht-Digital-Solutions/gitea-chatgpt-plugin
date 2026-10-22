@@ -62,7 +62,8 @@ try {
   };
   const service = model.services.mcp;
   if (
-    service.image !== `ghcr.io/jtracht/gitea-chatgpt-plugin:v${version}` ||
+    service.image !==
+      `ghcr.io/tracht-digital-solutions/gitea-chatgpt-plugin:v${version}` ||
     service.build ||
     service.environment.NODE_ENV !== 'production' ||
     !service.read_only ||
