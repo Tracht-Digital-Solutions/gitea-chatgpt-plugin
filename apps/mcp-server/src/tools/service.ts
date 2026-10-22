@@ -49,7 +49,7 @@ export class ToolService {
         selfService: this.config.allowUserServers,
         instructions: this.config.allowUserServers
           ? 'Open this secure link, sign in, enter your own Gitea HTTPS server and connect your account there. Then return to ChatGPT and call list_instances and connection_status. Never paste credentials into chat. No Docker or .env setup is required for end users; the operator hosts this MCP service once.'
-          : 'Open this secure link and connect an operator-approved server. This operator has disabled self-service server registration. Never paste credentials into chat.',
+            : 'Open this secure link and connect a server configured in .env. ChatGPT cannot change the server/OAuth configuration; edit .env and rerun node scripts/install.mjs outside ChatGPT to apply settings. Never paste credentials into chat.',
       };
     const conn = await this.connection(
       identity.owner,
