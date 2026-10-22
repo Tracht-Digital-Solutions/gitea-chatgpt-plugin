@@ -1,11 +1,5 @@
 import { execFileSync, spawnSync } from 'node:child_process';
-import {
-  existsSync,
-  mkdtempSync,
-  readFileSync,
-  writeFileSync,
-  rmSync,
-} from 'node:fs';
+import { mkdtempSync, readFileSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { resolve, sep } from 'node:path';
 import { expect, it } from 'vitest';
@@ -70,7 +64,7 @@ it('documents update/status, refuses Docker-only modes without Docker and never 
   try {
     expect(run('--help').stdout).toMatch(/--update[\s\S]*--status/);
     expect(run('--status').status).toBe(1);
-    expect(existsSync(file)).toBe(false);
+    expect(() => readFileSync(file)).toThrow(/ENOENT/);
     run('--init');
     writeFileSync(
       file,
@@ -125,7 +119,7 @@ it('embeds only a validated build commit in build-info.json', () => {
     rmSync(out);
     for (const bad of ['main', '$(id)', 'abc'])
       expect(spawnSync(process.execPath, [script, bad, out]).status).toBe(1);
-    expect(existsSync(out)).toBe(false);
+    expect(() => readFileSync(out)).toThrow(/ENOENT/);
   } finally {
     rmSync(directory, { recursive: true, force: true });
   }
