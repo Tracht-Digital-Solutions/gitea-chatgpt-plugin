@@ -41,6 +41,7 @@ Das Skript kopiert `.env.example` nach `.env` und erzeugt einmal einen zufällig
 | `GITEA_INSTANCES`                                              | JSON-Liste eigener Gitea-Server; keiner ist fest vorgegeben.                                                   |
 | `ALLOW_USER_SERVERS`                                           | Standard `false`: Server hier konfigurieren. Optional `true` erlaubt zusätzliche öffentliche Server im Portal. |
 | `ALLOWED_PRIVATE_CIDRS`                                        | Bei Bedarf kleinste Netzbereiche für konfigurierte interne Server, sonst leer.                                 |
+| `REQUIRE_WRITE_APPROVAL`                                       | Standard `false`: Schreibaufträge laufen ohne Browserfreigabe. `true` verlangt eine exakte Einmalfreigabe.     |
 | `DATABASE_PATH`                                                | Im Container beim Standard `data/gitea.sqlite` belassen.                                                       |
 
 Beispiel für deine Serverliste, Platzhalter ersetzen:
@@ -48,6 +49,7 @@ Beispiel für deine Serverliste, Platzhalter ersetzen:
 ```dotenv
 GITEA_INSTANCES=[{"id":"mein-server","url":"https://DEIN-GITEA-HOST"}]
 ALLOW_USER_SERVERS=false
+REQUIRE_WRITE_APPROVAL=false
 ```
 
 Weitere Server sind zusätzliche Objekte im Array. Standardmäßig muss mindestens ein tatsächlicher Server eingetragen werden. Für Gitea-OAuth kann das Instanzobjekt zusätzlich `oauthClientId`, `oauthClientSecret` und explizite `oauthScopes` enthalten; Secrets bleiben lokal. Alternativ ein eng berechtigtes Gitea-PAT später im geschützten Portal eingeben, niemals im Chat. `MCP_CLIENT_ID` und `PORTAL_CLIENT_ID` sind unterschiedliche Clients.
@@ -82,7 +84,7 @@ Unter **Plugins → + → Add custom MCP server** die tatsächlichen Werte aus `
 
 Das ZIP ist für Clients und Authoring-/Importwege mit Unterstützung portabler Agent-Plugins gedacht. Diese Anleitung behauptet keinen allgemeinen ZIP-Upload-Knopf in ChatGPT. Codex kann alternativ seine unterstützte MCP-Konfiguration mit dem konkreten Endpunkt und OAuth verwenden. Ein GitHub-Repository oder ZIP bedeutet keine Freigabe im offiziellen Plugin-Verzeichnis.
 
-Prüfe `list_instances`, `connection_status` und `list_repositories`. Schreibaufträge benötigen weiterhin die separate Freigabe der konkreten Aktion im Browser. Die tatsächliche Installation in deinem ChatGPT-Konto ist projektseitig noch nicht verifiziert.
+Prüfe `list_instances`, `connection_status` und `list_repositories`. Schreibaufträge werden standardmäßig direkt ausgeführt; mit `REQUIRE_WRITE_APPROVAL=true` benötigen sie die separate Freigabe der konkreten Aktion im Browser. Die tatsächliche Installation in deinem ChatGPT-Konto ist projektseitig noch nicht verifiziert.
 
 ## 7. Änderungen und Updates
 

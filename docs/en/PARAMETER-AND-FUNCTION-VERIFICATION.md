@@ -56,7 +56,7 @@ Create/read/list/revisions/edit/delete tools use the official wiki API. Create/e
 
 ## Permissions and verification
 
-MCP scopes and exact independent browser approval remain required. Gitea organization creation can need `write:organization`, package publishing `write:package`, personal project/repository creation `write:user`, with corresponding repository/issue permissions elsewhere. Permissions are never bypassed and blanket site-admin rights are unnecessary.
+MCP scopes remain required, plus exact independent browser approval when `REQUIRE_WRITE_APPROVAL=true`. Gitea organization creation can need `write:organization`, package publishing `write:package`, personal project/repository creation `write:user`, with corresponding repository/issue permissions elsewhere. Permissions are never bypassed and blanket site-admin rights are unnecessary.
 
 For Gitea OAuth, explicitly configure additional scopes per instance:
 

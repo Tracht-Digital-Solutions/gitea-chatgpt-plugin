@@ -55,7 +55,7 @@ Browser sessions require trusted HTTPS because cookies are Secure. Do not rewrit
 
 Run `pnpm install --frozen-lockfile`, `pnpm check`, `pnpm test:e2e`, then build the image and run `pnpm test:docker`. For local runtime with `.env`, use `node --env-file=.env --import tsx apps/mcp-server/src/index.ts`; a trusted HTTPS proxy and real OAuth callbacks remain necessary. HTTP loopback injections exist only in tests.
 
-Verify protected-resource discovery, OAuth initialization in MCP Inspector, tool listing and a harmless repository read. Open the portal and connect Gitea. In your own test repository, stage a write, inspect/approve its exact browser payload, repeat the identical tool arguments with approvalId and verify that replay fails. Real ChatGPT account verification remains a separate step.
+Verify protected-resource discovery, OAuth initialization in MCP Inspector, tool listing and a harmless repository read. Open the portal and connect Gitea. In your own test repository, run a write. With `REQUIRE_WRITE_APPROVAL=true`, stage a write, inspect/approve its exact browser payload, repeat the identical tool arguments with approvalId and verify that replay fails. Real ChatGPT account verification remains a separate step.
 
 ## Updates and rollback
 

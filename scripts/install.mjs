@@ -98,6 +98,8 @@ function settings() {
     if (!env[name]?.trim()) invalid.push(name);
   if (!['true', 'false'].includes(env.ALLOW_USER_SERVERS ?? 'false'))
     invalid.push('ALLOW_USER_SERVERS');
+  if (!['true', 'false'].includes(env.REQUIRE_WRITE_APPROVAL ?? 'false'))
+    invalid.push('REQUIRE_WRITE_APPROVAL');
   if (
     !/^\d+$/.test(env.PORT ?? '3000') ||
     Number(env.PORT ?? '3000') < 1 ||

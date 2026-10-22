@@ -57,6 +57,7 @@ export type Config = {
   instances: Instance[];
   privateCidrs: string[];
   allowUserServers: boolean;
+  requireWriteApproval: boolean;
 };
 
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
@@ -85,6 +86,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
         .pipe(z.array(instanceSchema)),
       ALLOWED_PRIVATE_CIDRS: z.string().default(''),
       ALLOW_USER_SERVERS: z.enum(['true', 'false']).default('false'),
+      REQUIRE_WRITE_APPROVAL: z.enum(['true', 'false']).default('false'),
     })
     .parse(env);
   const publicUrl = new URL(parsed.PUBLIC_URL);
@@ -117,6 +119,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     port: parsed.PORT,
     instances,
     allowUserServers: parsed.ALLOW_USER_SERVERS === 'true',
+    requireWriteApproval: parsed.REQUIRE_WRITE_APPROVAL === 'true',
     privateCidrs: parsed.ALLOWED_PRIVATE_CIDRS.split(',')
       .map((s) => s.trim())
       .filter(Boolean),

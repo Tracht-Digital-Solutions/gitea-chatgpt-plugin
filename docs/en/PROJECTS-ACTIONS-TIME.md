@@ -4,9 +4,9 @@
 
 ## Setup and approval
 
-Complete the [step-by-step setup](STEP-BY-STEP.md) and install a build containing these tools. Reads require `gitea.read`; every mutation requires `gitea.write`, appropriate Gitea permissions, and independent browser approval of the exact arguments. Gitea tokens need corresponding Actions/repository/issue/project permissions; organization/user projects may require additional organization/user scopes. Avoid blanket administrative permissions. Denied requests are never bypassed.
+Complete the [step-by-step setup](STEP-BY-STEP.md) and install a build containing these tools. Reads require `gitea.read`; every mutation requires `gitea.write`, and appropriate Gitea permissions; with `REQUIRE_WRITE_APPROVAL=true` also independent browser approval of the exact arguments. Gitea tokens need corresponding Actions/repository/issue/project permissions; organization/user projects may require additional organization/user scopes. Avoid blanket administrative permissions. Denied requests are never bypassed.
 
-First call a write tool without `approvalId`, open its approval URL yourself, inspect and approve, then repeat identical arguments with that ID. Approvals expire after ten minutes, apply to one user/connection/payload, and cannot be reused.
+Only with `REQUIRE_WRITE_APPROVAL=true` (otherwise writes run directly): first call a write tool without `approvalId`, open its approval URL yourself, inspect and approve, then repeat identical arguments with that ID. Approvals expire after ten minutes, apply to one user/connection/payload, and cannot be reused.
 
 ## Actions control
 
