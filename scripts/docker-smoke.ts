@@ -1,4 +1,4 @@
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
 import { request as httpRequest, type IncomingHttpHeaders } from 'node:http';
 const name = 'gitea-mcp-smoke-' + randomBytes(5).toString('hex');
@@ -105,6 +105,21 @@ try {
     throw new Error(
       `Published branding unavailable: HTTP ${icon.status}, ${png.length} bytes`,
     );
+  // The startup line goes to stderr and proves the loaded build and approval mode.
+  const logs = spawnSync('docker', ['logs', name], { encoding: 'utf8' });
+  if (
+    !/Gitea MCP server ready: version=\S+ commit=\S+ writeApproval=disabled mode=production/.test(
+      logs.stdout + logs.stderr,
+    )
+  )
+    throw new Error('Startup summary with approval mode missing');
+  docker([
+    'exec',
+    name,
+    'node',
+    '-e',
+    "JSON.parse(require('fs').readFileSync('build-info.json','utf8'))",
+  ]);
   const anonymous = await probe('/mcp', 'POST');
   if (anonymous.status !== 401)
     throw new Error('MCP must require authentication');

@@ -1,11 +1,12 @@
 import { loadConfig } from './config/index.js';
 import { Store } from './security/store.js';
 import { createApp } from './app.js';
+import { startupSummary } from './runtime.js';
 const config = loadConfig();
 const store = new Store(config.database, config.encryptionKey);
 const { app } = createApp(config, store);
 const server = app.listen(config.port, '0.0.0.0', () =>
-  process.stderr.write('Gitea MCP server ready\n'),
+  process.stderr.write(startupSummary(config) + '\n'),
 );
 server.requestTimeout = 30000;
 server.headersTimeout = 10000;

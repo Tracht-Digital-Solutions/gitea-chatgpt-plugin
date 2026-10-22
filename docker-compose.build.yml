@@ -1,5 +1,0 @@
-# Optional source build; use both Compose files explicitly.
-services:
-  mcp:
-    image: gitea-chatgpt-plugin:local
-    build: .

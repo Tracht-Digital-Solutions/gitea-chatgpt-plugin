@@ -4,7 +4,7 @@
 
 [English](docs/en/README.md) · Apache-2.0
 
-Open-Source-MCP-Server und portables Plugin zur Verwaltung eigener Gitea-Instanzen mit ChatGPT und kompatiblen Codex-Clients. 159 typisierte Tools für Repositories, Dateien, Issues, Pull Requests, Reviews, Actions, Kanban-Projekte, Zeiterfassung, Organisationen, Packages, Sprint-Meilensteine, Gitea-Releases und Wiki. Schreibende Aktionen werden standardmäßig direkt ausgeführt; mit `REQUIRE_WRITE_APPROVAL=true` verlangen sie eine separate menschliche Freigabe.
+Open-Source-MCP-Server und portables Plugin zur Verwaltung eigener Gitea-Instanzen mit ChatGPT und kompatiblen Codex-Clients. 160 typisierte Tools für Repositories, Dateien, Issues, Pull Requests, Reviews, Actions, Kanban-Projekte, Zeiterfassung, Organisationen, Packages, Sprint-Meilensteine, Gitea-Releases und Wiki. Schreibende Aktionen werden standardmäßig direkt ausgeführt; mit `REQUIRE_WRITE_APPROVAL=true` verlangen sie eine separate menschliche Freigabe.
 
 ## Installation per Skript
 
@@ -25,7 +25,7 @@ Das Skript bewahrt vorhandene Einstellungen und Schlüssel, baut Server und Imag
 
 Die kommentierte [.env.example](.env.example) beschreibt alle Werte. Einstellungen werden ausschließlich lokal in `.env` gepflegt und per Skript angewendet; ChatGPT kann sie nicht ändern. Standardmäßig werden Gitea-Server über `GITEA_INSTANCES` konfiguriert und die freie Servereinrichtung ist deaktiviert. Kein Gitea-Server ist fest vorgegeben. Tokens ausschließlich im geschützten Portal oder in dokumentierten Betreiber-Secrets hinterlegen.
 
-In ChatGPT die konkrete MCP-Verbindung aus `artifacts/chatgpt-connection.json` hinzufügen, OAuth konfigurieren und das Plugin installieren. Danach `list_instances`, `connection_status` und `list_repositories` prüfen. Zugangsdaten niemals im Chat senden. Die tatsächliche Kontoabnahme erfordert dein eigenes Deployment und ist noch nicht verifiziert.
+In ChatGPT die konkrete MCP-Verbindung aus `artifacts/chatgpt-connection.json` hinzufügen, OAuth konfigurieren und das Plugin installieren. Danach `list_instances`, `connection_status`, `list_repositories` und `get_runtime_status` prüfen. Update, Moduswechsel und Diagnose von `approval_required`: [Schreibfreigabe betreiben und prüfen](docs/de/SCHREIBFREIGABE.md). Zugangsdaten niemals im Chat senden. Die tatsächliche Kontoabnahme erfordert dein eigenes Deployment und ist noch nicht verifiziert.
 
 ## Entwicklung und Sicherheit
 

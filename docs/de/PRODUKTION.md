@@ -2,4 +2,4 @@
 
 Folge der [Installationsanleitung](INSTALLATION.md). Das Installationsskript baut das Produktionsimage lokal und startet es mit `--start`. Ohne Docker `--no-docker` verwenden und anschließend `pnpm start` mit eigener Prozessüberwachung ausführen. Es gibt keine Release-Downloads als Installationsvoraussetzung.
 
-Einstellungen in `.env` bearbeiten, Skript erneut ausführen, Datenvolume und Schlüssel beibehalten. HTTPS-/OAuth-/Proxy-Details: [Deployment](../DEPLOYMENT.md). Niemals `docker compose down -v` als Update verwenden.
+Einstellungen in `.env` bearbeiten, `node scripts/install.mjs --start` ausführen (Updates: `--update`, Prüfung: `--status`, siehe [Schreibfreigabe](SCHREIBFREIGABE.md)), Datenvolume und Schlüssel beibehalten. HTTPS-/OAuth-/Proxy-Details: [Deployment](../DEPLOYMENT.md). Niemals `docker compose down -v` als Update verwenden.

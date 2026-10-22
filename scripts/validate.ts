@@ -53,9 +53,9 @@ for (const server of Object.values(servers)) {
 const pkg = json('package.json');
 if (pkg.version !== manifest.version) throw new Error('Version drift');
 const serverVersion = readFileSync(
-  'apps/mcp-server/src/mcp/server.ts',
+  'apps/mcp-server/src/runtime.ts',
   'utf8',
-).match(/const VERSION = '([^']+)'/u)?.[1];
+).match(/export const VERSION = '([^']+)'/u)?.[1];
 if (serverVersion !== pkg.version) throw new Error('MCP server version drift');
 const presentation = (
   manifest.extensions as {
