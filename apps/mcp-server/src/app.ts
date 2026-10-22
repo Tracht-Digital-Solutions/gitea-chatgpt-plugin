@@ -44,7 +44,7 @@ export function createApp(
       'Content-Security-Policy':
         "default-src 'none'; img-src 'self'; style-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'",
       'X-Content-Type-Options': 'nosniff',
-      'Referrer-Policy': 'no-referrer',
+      'Referrer-Policy': 'same-origin',
       'Strict-Transport-Security': 'max-age=31536000',
       'X-Frame-Options': 'DENY',
     });
