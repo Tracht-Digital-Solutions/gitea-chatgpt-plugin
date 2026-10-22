@@ -1,5 +1,7 @@
 # Changelog
 
+Hinweis vom 22.10.2026: Historische Versionsnotizen. GitHub-Releases und automatische Release-/Publish-Workflows wurden entfernt; Installation erfolgt aus dem Quellcode per Skript.
+
 ## [0.4.0](https://github.com/jtracht/gitea-chatgpt-plugin/compare/v0.3.3...v0.4.0) (2026-10-21)
 
 

@@ -9,6 +9,7 @@
     "node": ">=24 <25"
   },
   "scripts": {
+    "setup": "node scripts/install.mjs",
     "branding": "tsx scripts/branding.ts",
     "branding:check": "tsx scripts/branding.ts --check",
     "dev": "tsx watch apps/mcp-server/src/index.ts",

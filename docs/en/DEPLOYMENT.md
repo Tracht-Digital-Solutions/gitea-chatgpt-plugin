@@ -19,15 +19,14 @@ In Keycloak, create an OIDC realm, Standard Flow clients, S256-PKCE, client scop
 
 ## Configure and start
 
-Copy `.env.example` to `.env`; generate a random 32-byte hex encryption key. Set every OAuth URL and client ID, `PUBLIC_URL` (HTTPS origin only), `OAUTH_AUDIENCE`, allowed Gitea instances and database location. Keep configuration/secrets outside Git and restrict file access. `GITEA_INSTANCES` is a JSON array of `{ "id": "work", "url": "https://git.example.org" }`; subpath installations are supported. With default `ALLOW_USER_SERVERS=true`, users can connect public HTTPS servers through the ChatGPT setup link without editing this list. Setting it to `false` restricts connections to configured instances. Only configured instances can use operator private-CIDR exceptions; these never apply to self-service URLs.
+Copy `.env.example` to `.env`; generate a random 32-byte hex encryption key. Set every OAuth URL and client ID, `PUBLIC_URL` (HTTPS origin only), `OAUTH_AUDIENCE`, allowed Gitea instances and database location. Keep configuration/secrets outside Git and restrict file access. `GITEA_INSTANCES` is a JSON array of `{ "id": "work", "url": "https://git.example.org" }`; subpath installations are supported. Default `ALLOW_USER_SERVERS=false` uses the configured instance list. Edit .env and rerun node scripts/install.mjs to apply changes outside ChatGPT. Explicitly setting true optionally permits extra public servers through the portal. Only configured instances can use operator private-CIDR exceptions; these never apply to self-service URLs.
 
 For Gitea OAuth, register an application on each chosen instance with callback `https://<mcp-host>/gitea/callback` and PKCE, then set `oauthClientId` and optional `oauthClientSecret` on that instance using operator secrets. Otherwise use narrowly scoped Gitea PATs in the browser portal. Grant only required user/repository/issue read/write scopes. Never grant admin or runner access by default.
 
 Private addresses are denied by default. Explicitly allow only required CIDRs using `ALLOWED_PRIVATE_CIDRS`, preferably individual `/32` or `/128` addresses. This is a privileged operator exception and must never be user-controlled.
 
 ```bash
-docker compose pull
-docker compose up -d --no-build --wait
+node scripts/install.mjs --start
 docker compose ps
 docker compose logs --tail=50 mcp
 curl http://127.0.0.1:3000/healthz
@@ -60,4 +59,4 @@ Verify protected-resource discovery, OAuth initialization in MCP Inspector, tool
 
 ## Updates and rollback
 
-Record release tag and image digest. Stop the service and consistently back up the entire database volume including SQLite WAL; back up the encryption key separately. Verify release checksums, update to a selected tag/digest, restart and check health/OAuth/read behavior. Roll back both image and matching database snapshot when needed. Never use `docker compose down -v` for upgrades. Restart clears browser sessions. Losing the key requires reconnecting all accounts. Automated encryption-key migration is not included in v0.1; use controlled reconnection with a new database/key. Define audit retention and deletion policies as the operator.
+Record the source commit used for your local build. Stop the service and consistently back up the entire database volume including SQLite WAL; back up the encryption key separately. Update the source, retain .env, run node scripts/install.mjs --start and recheck health/OAuth/read behavior. Roll back both image and matching database snapshot when needed. Never use `docker compose down -v` for upgrades. Restart clears browser sessions. Losing the key requires reconnecting all accounts. Automated encryption-key migration is not included in v0.1; use controlled reconnection with a new database/key. Define audit retention and deletion policies as the operator.

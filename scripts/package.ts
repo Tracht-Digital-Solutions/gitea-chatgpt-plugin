@@ -42,11 +42,19 @@ if (process.env.MCP_PUBLIC_URL) {
     mcpServers: {
       gitea: {
         url: string;
-        extensions: { 'com.openai': { urlTemplates?: string[] } };
+        extensions: {
+          'com.openai': {
+            urlTemplates?: string[];
+            auth: { client: { clientId: string } };
+          };
+        };
       };
     };
   };
   mcp.mcpServers.gitea.url = u.href;
+  if (process.env.MCP_CLIENT_ID)
+    mcp.mcpServers.gitea.extensions['com.openai'].auth.client.clientId =
+      process.env.MCP_CLIENT_ID;
   delete mcp.mcpServers.gitea.extensions['com.openai'].urlTemplates;
   files['mcp.json'] = strToU8(JSON.stringify(mcp, null, 2) + '\n');
 }
@@ -88,6 +96,17 @@ for (const path of [
   'docker-compose.yml',
   'LICENSE',
   'README.md',
+  'Dockerfile',
+  '.dockerignore',
+  'package.json',
+  'pnpm-lock.yaml',
+  'pnpm-workspace.yaml',
+  'tsconfig.json',
+  'tsconfig.build.json',
+  'scripts/install.mjs',
+  'scripts/production.mjs',
+  'docs/research/plugin.schema.json',
+  'docs/research/mcp.schema.json',
   'plugin/assets/icon.png',
   'plugin/assets/icon.svg',
 ])
@@ -102,6 +121,11 @@ function addDocs(dir: string): void {
   }
 }
 addDocs('docs');
+addDocs('apps');
+addDocs('packages');
+addDocs('scripts');
+for (const [path, bytes] of Object.entries(files))
+  deployment['plugin/' + path] = bytes;
 const deployName = 'gitea-deployment-' + version + '.zip';
 const deployArchive = zipSync(deployment, {
   level: 9,

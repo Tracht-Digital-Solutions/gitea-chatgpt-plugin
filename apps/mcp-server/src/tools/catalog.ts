@@ -130,7 +130,7 @@ add(
 );
 add(
   'connection_setup',
-  'Set up your own Gitea server from ChatGPT: get a secure sign-in link, optionally prefilled with its public HTTPS address. Never provide credentials in chat.',
+  'Get the secure account-linking portal for configured Gitea servers. Server and OAuth settings are edited in local .env and applied by the installation script outside ChatGPT. Optional serverUrl is used only if the operator explicitly enables public server registration. Never provide credentials in chat.',
   { serverUrl: publicServerUrl.optional() },
 );
 add(

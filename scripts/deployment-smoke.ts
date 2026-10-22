@@ -40,11 +40,21 @@ try {
   }
   writeFileSync(
     resolve(directory, '.env'),
-    readFileSync(resolve(directory, '.env.example'), 'utf8').replace(
-      'ENCRYPTION_KEY=',
-      'ENCRYPTION_KEY=' + randomBytes(32).toString('hex'),
-    ),
+    readFileSync(resolve(directory, '.env.example'), 'utf8')
+      .replaceAll('example.org', 'install.test')
+      .replace(
+        'GITEA_INSTANCES=[]',
+        'GITEA_INSTANCES=[{"id":"own","url":"https://git.install.test"}]',
+      )
+      .replace(
+        'ENCRYPTION_KEY=',
+        'ENCRYPTION_KEY=' + randomBytes(32).toString('hex'),
+      ),
   );
+  execFileSync(process.execPath, ['scripts/install.mjs', '--check'], {
+    cwd: directory,
+    stdio: 'pipe',
+  });
   const model = JSON.parse(
     run(['compose', '-p', project, 'config', '--format', 'json']),
   ) as {
@@ -62,9 +72,8 @@ try {
   };
   const service = model.services.mcp;
   if (
-    service.image !==
-      `ghcr.io/tracht-digital-solutions/gitea-chatgpt-plugin:v${version}` ||
-    service.build ||
+    service.image !== 'gitea-chatgpt-plugin:local' ||
+    !service.build ||
     service.environment.NODE_ENV !== 'production' ||
     !service.read_only ||
     !service.init ||
@@ -74,6 +83,7 @@ try {
   service.image = process.env.DOCKER_TEST_IMAGE ?? service.image;
   service.ports[0]!.published = '0';
   writeFileSync(resolve(directory, 'runtime.json'), JSON.stringify(model));
+  run(['compose', '-p', project, '-f', 'runtime.json', 'build', 'mcp']);
   started = true;
   run([
     'compose',
@@ -105,7 +115,7 @@ try {
   const health = await fetch('http://127.0.0.1:' + port + '/healthz');
   if (!health.ok) throw new Error('Deployment ZIP health failed');
   process.stdout.write(
-    'Extracted production ZIP: version-pinned Compose, persistent volume and healthy service verified.\n',
+    'Extracted source ZIP: local production build, .env settings, persistent volume and healthy service verified.\n',
   );
 } finally {
   if (started)

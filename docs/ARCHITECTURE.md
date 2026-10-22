@@ -35,4 +35,6 @@ Grenzen: ein Prozess, ein persistentes Volume, begrenzte Pagination und Antwortg
 
 ## Einrichtung aus ChatGPT
 
+Aktueller Installationsweg: `.env.example` mit `node scripts/install.mjs --init` vorbereiten, lokal konfigurieren und das Skript erneut ausführen. ChatGPT kann Server-/OAuth-Einstellungen nicht ändern. Der folgende öffentliche Portalweg bleibt optional; die Vorgabe ist `ALLOW_USER_SERVERS=false`.
+
 Ein Betreiber stellt den MCP-Dienst und dessen OAuth-Anmeldung einmal bereit. Endnutzer installieren das Plugin in ChatGPT, erhalten über `connection_setup` einen Einrichtungslink und verbinden ihren eigenen Gitea-Server im CSRF-geschützten Portal. Der Link kann die öffentliche Serveradresse vorausfüllen, enthält aber keine Zugangsdaten und ändert selbst keinen Zustand. Adresse und Token liegen gemeinsam AEAD-verschlüsselt im jeweiligen benutzergebundenen Verbindungsdatensatz. Ein neuer Requester wird an genau diese Basis gebunden; nur öffentliche Ziele sind erlaubt. Bestehende feste Betreiber-Instanzen behalten ihren bisherigen OAuth-/Netzwerkpfad. `ALLOW_USER_SERVERS=false` sperrt den zusätzlichen Weg.

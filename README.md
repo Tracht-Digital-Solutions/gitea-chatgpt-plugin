@@ -1,100 +1,42 @@
 # Gitea for ChatGPT
 
-<img src="plugin/assets/icon.png" width="96" height="96" alt="Gitea for ChatGPT: Teetasse mit Git-Branch und Sprechblase">
+<img src="plugin/assets/icon.png" width="96" height="96" alt="Gitea for ChatGPT">
 
-**Produktionspaket:** Das Release enthält ein eigenständiges `gitea-deployment-VERSION.zip` mit versionsgebundener Docker-Konfiguration und deutscher/englischer Anleitung. [Produktionsinstallation](docs/de/PRODUKTION.md). Der Server läuft mit `NODE_ENV=production`; ein eigenes HTTPS-/OAuth-Deployment ist erforderlich.
+[English](docs/en/README.md) · Apache-2.0
 
-[![CI](https://github.com/Tracht-Digital-Solutions/gitea-chatgpt-plugin/actions/workflows/ci.yml/badge.svg)](https://github.com/Tracht-Digital-Solutions/gitea-chatgpt-plugin/actions/workflows/ci.yml)
-[![Security](https://github.com/Tracht-Digital-Solutions/gitea-chatgpt-plugin/actions/workflows/security.yml/badge.svg)](https://github.com/Tracht-Digital-Solutions/gitea-chatgpt-plugin/actions/workflows/security.yml)
+Open-Source-MCP-Server und portables Plugin zur Verwaltung eigener Gitea-Instanzen mit ChatGPT und kompatiblen Codex-Clients. 159 typisierte Tools für Repositories, Dateien, Issues, Pull Requests, Reviews, Actions, Kanban-Projekte, Zeiterfassung, Organisationen, Packages, Sprint-Meilensteine, Gitea-Releases und Wiki. Schreibende Aktionen verlangen eine separate menschliche Freigabe.
 
-**Deutsch** · [English](docs/en/README.md)
+## Installation per Skript
 
-**Installation und Einrichtung:** [Schritt-für-Schritt-Anleitung](docs/de/SCHRITT-FUER-SCHRITT.md) mit Docker, OAuth/Keycloak, HTTPS, Gitea-Verbindung, ChatGPT/Codex und Fehlerbehebung.
-
-Ein selbst hostbarer MCP-Server mit portablem Agent-Plugins-Paket für die Verwaltung eigener Gitea-Instanzen aus ChatGPT und kompatiblen Codex-Clients. Kein kostenpflichtiger Cloud-Dienst erforderlich. Unabhängiges Communityprojekt, keine offizielle OpenAI- oder Gitea-Erweiterung.
-
-**Entwicklungsstand:** Die 0.x-Reihe besteht aus frühen Entwicklungsreleases. [Nachweise und offene Abnahmen](docs/PROGRESS.md) sind verbindlich; die echte ChatGPT-Kontoverbindung und eine Aufnahme ins öffentliche Plugin-Verzeichnis sind noch nicht verifiziert. Das Paket enthält eine konfigurierbare HTTPS-Vorlage und keinen von diesem Projekt betriebenen Dienst.
-
-## Funktionen
-
-Ab v0.3.0: [vollständige Issue-/Projektfelder, Organisations- und Repositoryerstellung, Packages, Sprint-Meilensteine, Releases und Wiki](docs/de/PARAMETER-UND-FUNKTIONSPRUEFUNG.md). Actions-Wiederholungen und Laufabbrüche sind zusätzlich mit einem echten isolierten Runner geprüft.
-
-- Mehrere getrennte Gitea-Verbindungen pro OAuth-Benutzer, aktive Instanz, Status, Benutzer und API-Version.
-- Repositories lesen, suchen, erstellen und ausgewählte Einstellungen ändern; Dateien, Verzeichnisse, Git-Bäume, Statistikfelder, Branches und Tags lesen.
-- Begrenzte Suche in Dateiinhalten und Commit-Historie mit ausdrücklichem Hinweis auf unvollständige Ergebnisse.
-- Feature-Branches und Datei-Commits erstellen, bearbeiten oder löschen, Diffs und Vergleiche lesen.
-- Issues, Kommentare, Zuständige, Labels, Meilensteine und verfügbare Abhängigkeiten.
-- Pull Requests, Diffs, Dateien, Reviews und ausdrücklich freigegebene Merges mit Head-SHA-Prüfung.
-- Releases und Tags mit separater Freigabe; Actions lesen, Workflows starten/aktivieren/deaktivieren, Läufe oder Jobs wiederholen und Läufe abbrechen.
-- Repository-, Organisations- und Benutzerprojekte mit Kanban-Spalten und Issue-Karten erstellen, bearbeiten, sortieren und verschieben.
-- Zeiten pro Issue buchen/lesen/löschen und eigene Stoppuhren starten, stoppen oder verwerfen. [Einrichtung, Beispiele und Grenzen dieser Erweiterungen](docs/de/PROJEKTE-ACTIONS-ZEIT.md); verfügbar ab v0.2.0.
-- Keine öffentlichen Administrations-, Runner-, Webhook- oder Rechteänderungstools.
-
-Alle Funktionen sind ohne ChatGPT-App-UI nutzbar. Die sichere Einrichtung und menschliche Schreibfreigabe erfolgen bewusst in einem eigenen Browserportal.
-
-## Voraussetzungen
-
-Node.js 24 LTS und pnpm 11.25.0 für Entwicklung, alternativ Docker/Compose; eine erreichbare Gitea-Instanz; ein OAuth/OIDC-Anbieter mit signierten JWT-Zugangstokens, PKCE und den Scopes `gitea.read`/`gitea.write`; HTTPS für MCP und Browserportal. Keycloak kann selbst gehostet werden.
-
-## Installation mit Docker
-
-**Du möchtest das Plugin in ChatGPT einrichten?** Nutze die [ChatGPT-Einrichtung](docs/de/CHATGPT-EINRICHTUNG.md): Plugin installieren, „Richte meinen Gitea-Server ein“ schreiben, eigenen Server im geschützten Dialog verbinden und zu ChatGPT zurückkehren. Endnutzer benötigen weder Docker noch `.env`. Der folgende Abschnitt richtet sich ausschließlich an Betreiber des gemeinsamen MCP-Dienstes. Ein produktiver MCP-Endpunkt dieses Projekts ist noch nicht bereitgestellt.
+Voraussetzungen: Node.js 24 LTS, pnpm 11.25.0, Git und für Containerbetrieb Docker Compose. Eigener HTTPS-Endpunkt und OAuth/OIDC-Anbieter sind erforderlich. Es wird kein laufender Dienst mitgeliefert.
 
 ```bash
 git clone https://github.com/Tracht-Digital-Solutions/gitea-chatgpt-plugin.git
 cd gitea-chatgpt-plugin
-cp .env.example .env
-node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
-# Schlüssel und die eigenen HTTPS-/OAuth-Adressen in .env eintragen.
-docker compose pull
-docker compose up -d --no-build --wait
+node scripts/install.mjs --init
+# .env im Editor mit eigenen Gitea-/MCP-/OAuth-Einstellungen ausfüllen
+node scripts/install.mjs --check
+node scripts/install.mjs --start
 ```
 
-Anschließend HTTPS-Reverse-Proxy auf Port 3000 einrichten. Der MCP-Endpunkt lautet `https://<eigener-host>/mcp`, das Browserportal `https://<eigener-host>/portal`. Alle OAuth-Variablen sind Pflicht; es gibt keinen unauthentifizierten Produktionsmodus. [Vollständige Einrichtung, OAuth, Nginx Proxy Manager und Rollback](docs/DEPLOYMENT.md).
+Das Skript bewahrt vorhandene Einstellungen und Schlüssel, baut Server und Image lokal und erstellt ein Plugin mit konkretem Endpunkt. Ergebnis und öffentliche ChatGPT-Verbindungsdaten liegen unter `artifacts/`. Es gibt keine GitHub-Releases oder erforderlichen vorgebauten Images. [Vollständige Schritt-für-Schritt-Anleitung](docs/de/INSTALLATION.md).
 
-## Gitea verbinden
+## Einstellungen und ChatGPT
 
-1. Im installierten Plugin „Richte meinen Gitea-Server ein“ schreiben. `connection_setup` liefert den geschützten Einrichtungslink, optional mit deiner öffentlichen HTTPS-Adresse vorausgefüllt. Bei der Vorgabe `ALLOW_USER_SERVERS=true` ist dafür kein Betreiber-Eintrag in `GITEA_INSTANCES` nötig. Interne Server konfiguriert ausschließlich der Betreiber.
-2. Browserportal öffnen und beim eigenen OAuth-Anbieter anmelden.
-3. Gitea-OAuth nutzen, falls für diese Instanz eingerichtet; alternativ ein möglichst eng berechtigtes persönliches Access-Token ausschließlich im Passwortfeld des Portals eingeben.
-4. `list_instances`, `connection_status` und `list_repositories` testen.
-5. Verbindungen lassen sich im Portal oder über eine freigegebene Tool-Aktion trennen. Für vollständigen Widerruf zusätzlich die Berechtigung in Gitea löschen.
+Die kommentierte [.env.example](.env.example) beschreibt alle Werte. Einstellungen werden ausschließlich lokal in `.env` gepflegt und per Skript angewendet; ChatGPT kann sie nicht ändern. Standardmäßig werden Gitea-Server über `GITEA_INSTANCES` konfiguriert und die freie Servereinrichtung ist deaktiviert. Kein Gitea-Server ist fest vorgegeben. Tokens ausschließlich im geschützten Portal oder in dokumentierten Betreiber-Secrets hinterlegen.
 
-## ChatGPT und Codex
+In ChatGPT die konkrete MCP-Verbindung aus `artifacts/chatgpt-connection.json` hinzufügen, OAuth konfigurieren und das Plugin installieren. Danach `list_instances`, `connection_status` und `list_repositories` prüfen. Zugangsdaten niemals im Chat senden. Die tatsächliche Kontoabnahme erfordert dein eigenes Deployment und ist noch nicht verifiziert.
 
-Nach der [aktuellen OpenAI-Anleitung](https://developers.openai.com/plugins/deploy/connect-chatgpt): **Plugins → + → Add custom MCP server**, eigenen HTTPS-Endpunkt eintragen, OAuth auswählen, erstellen, installieren und in einem neuen Work-Chat per `@` auswählen. Client, Tarif und Workspace-Richtlinien können diese Funktion beschränken; eine vollständige Tarifmatrix ist durch die geprüften Entwicklerquellen nicht belegt.
-
-Für das portable Paket `pnpm install --frozen-lockfile && pnpm package` ausführen. Optional `MCP_PUBLIC_URL=https://<host>/mcp` beim Paketieren setzen. Das erzeugte ZIP unter `artifacts/` enthält `plugin.json`, `mcp.json`, Skill und Icon. Alternativ bindet Codex den Server über seine unterstützte MCP-Konfiguration mit `url` und OAuth an. [Details und Testfälle](docs/de/INSTALLATION.md).
-
-Ein öffentliches GitHub-Repository stellt Quellcode bereit. Eine private MCP-Verbindung verbindet einen konkreten Server. Eine Veröffentlichung im universellen Plugin-Verzeichnis benötigt eine zusätzliche Einreichung und Prüfung und erfolgt nicht automatisch.
-
-## Beispielaufträge
-
-- „Zeige meine verbundenen Gitea-Instanzen und die ersten 20 Repositories.“
-- „Lies das README in Repository X und fasse die offenen Issues zusammen.“
-- „Erstelle einen Feature-Branch für diese Korrektur und bereite die Änderung vor.“
-- „Zeige mir den Freigabelink für genau diesen Schreibauftrag.“
-- „Prüfe den Diff und bereite einen Pull Request vor.“
-
-## Sicherheitsmodell
-
-OAuth-Signatur, Issuer, Audience, Ablauf und Scope werden serverseitig geprüft. Gitea-Tokens liegen getrennt je Benutzer und Instanz AES-256-GCM-verschlüsselt in SQLite. DNS-Adressen werden pro Anfrage geprüft und am TLS-Socket gepinnt; Redirects werden verweigert. Interne Netze sind standardmäßig gesperrt. Jede Mutation benötigt eine konkrete, zehn Minuten gültige, einmalige Browserfreigabe. Dateiänderungen verweigern den Standardbranch und geschützte/unklare Branches. [Sicherheit und Grenzen](docs/SECURITY.md).
-
-## Entwicklung und Qualität
+## Entwicklung und Sicherheit
 
 ```bash
 pnpm install --frozen-lockfile
 pnpm check
-pnpm test:e2e             # erstellt und entfernt eine isolierte Gitea-Dockerinstanz
-docker build -t gitea-chatgpt-plugin:dev .
-pnpm test:docker
-pnpm dev                 # benötigt eigene Umgebungsvariablen/HTTPS-Proxy
+pnpm test:e2e
 ```
 
-`pnpm test` überspringt den echten Gitea-Test ohne isolierte Testumgebung. `pnpm test:e2e` führt ihn ausdrücklich aus. Sicherheitskritische Module haben eine verpflichtende Coverage-Schwelle von 85 %. Testergebnisse werden nicht aus übersprungenen Tests abgeleitet.
+CI prüft Typen, Lint, Format, Coverage, MCP-Schemas, Build, Docker und das lokale Installationspaket. Security prüft Dependencies, Secrets, CodeQL und Container. Release-/Publish-Automatisierung wurde entfernt. Git-Historie und Tags bleiben als Quellcode-Nachweise erhalten.
 
-CI prüft Typen, Lint, Format, Tests, Manifeste, Build und Docker. Security prüft Dependencies, Secrets, CodeQL und Container-/Konfigurationsrisiken. Release Please pflegt Conventional-Commit-Releases; Publish wird aus dem Release-Workflow explizit aufgerufen und erzeugt ZIP, Serverarchiv, Prüfsummen und ein GHCR-Image. [Releaseprozess](docs/de/RELEASES.md).
+OAuth, verschlüsselte Mandantentrennung, SSRF-/DNS-Rebinding-Schutz und konkrete Einmalfreigaben bleiben verpflichtend. [Deployment](docs/DEPLOYMENT.md), [Sicherheitsmodell](docs/SECURITY.md), [Fortschritt](docs/PROGRESS.md), [Mitwirken](CONTRIBUTING.md), [Lizenz](LICENSE).
 
-## Versionen und Mitwirkung
-
-v0.1.0: erster Entwicklungsrelease mit sicheren MCP-Kernabläufen. [Changelog](CHANGELOG.md), [Beitragen](CONTRIBUTING.md), [Sicherheitsmeldung](SECURITY.md). Lizenz: [Apache-2.0](LICENSE). Referenzdaten von Gitea: siehe [Drittanbieterhinweise](THIRD_PARTY_NOTICES.md).
+[Parameter- und Funktionsumfang](docs/de/PARAMETER-UND-FUNKTIONSPRUEFUNG.md) · [Actions, Projekte und Zeit](docs/de/PROJEKTE-ACTIONS-ZEIT.md). GitHub-Quellcode und lokale Pakete bedeuten keine Freigabe im offiziellen Plugin-Verzeichnis.
