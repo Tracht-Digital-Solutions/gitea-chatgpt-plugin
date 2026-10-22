@@ -46,6 +46,7 @@ Verwende die [skriptgesteuerte Installation](de/INSTALLATION.md). Der Standard-C
 
 ```bash
 node scripts/install.mjs --start
+node scripts/install.mjs --status
 docker compose ps
 docker compose logs --tail=50 mcp
 curl http://127.0.0.1:3000/healthz
@@ -91,6 +92,6 @@ Discovery per HTTPS abrufen, dann MCP Inspector oder kompatiblen Client mit OAut
 
 ## 7. Updates, Backup, Rollback
 
-Commit-ID des eigenen Builds festhalten. Vor Update Dienst stoppen und das gesamte Datenvolume inklusive SQLite-WAL konsistent sichern; Schlüssel separat sichern. Quellcode aktualisieren, `.env` beibehalten und `node scripts/install.mjs --start` ausführen. Bei Problemen vorherigen Quellstand bauen und das passende Datenbankbackup verwenden. Niemals `docker compose down -v` als Updatebefehl verwenden.
+Commit-ID des eigenen Builds festhalten. Vor Update Dienst stoppen und das gesamte Datenvolume inklusive SQLite-WAL konsistent sichern; Schlüssel separat sichern. Mit `node scripts/install.mjs --update` aktualisieren; `.env`, Schlüssel und Datenvolume bleiben erhalten, der Container wird zwingend ersetzt und Build-Commit sowie Freigabemodus werden geprüft. Das vorherige Image bleibt als `gitea-chatgpt-plugin:previous` erhalten. Siehe [Schreibfreigabe betreiben und prüfen](de/SCHREIBFREIGABE.md). Bei Problemen vorherigen Quellstand bauen und das passende Datenbankbackup verwenden. Niemals `docker compose down -v` als Updatebefehl verwenden.
 
 Prozessneustart beendet Browsersitzungen. Nach Verlust des Verschlüsselungsschlüssels müssen Benutzer alle Gitea-Verbindungen neu einrichten. Schlüsselrotation erfolgt in v0.1 durch kontrollierte Neuverbindung mit neuer Datenbank; eine automatische Re-Encryption-Migration wird noch nicht angeboten. Auditaufbewahrung und verschlüsselte Backups sind Betreiberaufgaben.

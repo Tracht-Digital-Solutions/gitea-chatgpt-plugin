@@ -8,6 +8,7 @@ import type { Requester } from '../security/network.js';
 import { RateLimiter } from '../security/limits.js';
 import { z } from 'zod';
 import { publicServerRequest } from '../security/public-server.js';
+import { runtimeStatus } from '../runtime.js';
 
 export class ToolService {
   private readonly limits = new RateLimiter();
@@ -38,6 +39,7 @@ export class ToolService {
         setupUrl: this.config.publicUrl + '/portal',
         selfService: this.config.allowUserServers,
       };
+    if (name === 'get_runtime_status') return runtimeStatus(this.config);
     if (name === 'connection_setup')
       return {
         setupUrl:
@@ -74,26 +76,27 @@ export class ToolService {
     );
     try {
       if (operation.write) {
-        // Resolving the active instance now binds the approval to that connection even when input omits it.
-        if (this.config.requireWriteApproval && !approvalId) {
-          const id = this.store.stage(
-            identity.owner,
-            conn.instance,
-            conn.revision,
-            name,
-            payload,
-          );
-          this.store.audit(identity.owner, conn.instance, name, 'pending');
-          return {
-            status: 'approval_required',
-            approvalId: id,
-            approvalUrl: this.config.publicUrl + '/approvals/' + id,
-            expiresInSeconds: 600,
-            instructions:
-              'The account owner must inspect and approve the exact payload in the browser. Then repeat this tool with identical arguments and approvalId.',
-          };
-        }
-        if (this.config.requireWriteApproval)
+        // With approvals disabled no approval is staged or consumed; a supplied approvalId is ignored.
+        if (this.config.requireWriteApproval) {
+          // Resolving the active instance now binds the approval to that connection even when input omits it.
+          if (!approvalId) {
+            const id = this.store.stage(
+              identity.owner,
+              conn.instance,
+              conn.revision,
+              name,
+              payload,
+            );
+            this.store.audit(identity.owner, conn.instance, name, 'pending');
+            return {
+              status: 'approval_required',
+              approvalId: id,
+              approvalUrl: this.config.publicUrl + '/approvals/' + id,
+              expiresInSeconds: 600,
+              instructions:
+                'The account owner must inspect and approve the exact payload in the browser. Then repeat this tool with identical arguments and approvalId.',
+            };
+          }
           this.store.consume(
             identity.owner,
             approvalId as string,
@@ -102,6 +105,7 @@ export class ToolService {
             name,
             payload,
           );
+        }
         if (operation.featureBranch)
           await client.assertFeatureBranch(
             String(p.owner),

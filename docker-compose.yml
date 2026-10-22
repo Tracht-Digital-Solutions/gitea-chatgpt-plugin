@@ -1,7 +1,13 @@
 services:
   mcp:
     image: gitea-chatgpt-plugin:local
-    build: .
+    # Always build from the checked-out source: a plain "docker compose up -d" never reuses a stale image.
+    pull_policy: build
+    build:
+      context: .
+      args:
+        BUILD_COMMIT: ${BUILD_COMMIT:-unknown}
+        BUILD_VERSION: ${BUILD_VERSION:-unknown}
     init: true
     stop_grace_period: 15s
     pids_limit: 128

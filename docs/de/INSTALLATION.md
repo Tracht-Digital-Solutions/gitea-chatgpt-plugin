@@ -63,7 +63,7 @@ node scripts/install.mjs --start
 
 Dies funktioniert in PowerShell, Linux und macOS. Der erste Aufruf prüft die Installationswerte ohne Build. Der zweite installiert die gesperrten Dependencies, baut TypeScript, validiert die vollständige Serverkonfiguration, erzeugt das Plugin mit deinem konkreten Endpunkt und deiner OAuth-Client-ID, baut das Docker-Image lokal und startet Compose mit Health-Prüfung. Es wird kein Release oder GHCR-Image benötigt.
 
-Nur bauen: `node scripts/install.mjs`. Ohne Docker: `node scripts/install.mjs --no-docker`, anschließend mit eigener Prozessüberwachung `pnpm start`. Auch der native Start nutzt `NODE_ENV=production`. Eine andere Konfigurationsdatei ist mit `--config PFAD` möglich; sie wird auch beim Compose-Start verwendet.
+Nur bauen: `node scripts/install.mjs`; dabei wird der laufende Container nicht ersetzt. Ohne Docker: `node scripts/install.mjs --no-docker`, anschließend mit eigener Prozessüberwachung `pnpm start`. Auch der native Start nutzt `NODE_ENV=production`. Eine andere Konfigurationsdatei ist mit `--config PFAD` möglich; sie wird auch beim Compose-Start verwendet.
 
 Ergebnisse unter `artifacts/`:
 
@@ -88,6 +88,6 @@ Prüfe `list_instances`, `connection_status` und `list_repositories`. Schreibauf
 
 ## 7. Änderungen und Updates
 
-Bearbeite `.env` außerhalb von ChatGPT und führe erneut `node scripts/install.mjs --start` aus. Das aktualisiert den Server und erstellt das konkrete Plugin neu. Bei geänderter MCP-URL oder OAuth-Client-ID auch die ChatGPT-Verbindung aktualisieren bzw. das Paket erneut installieren. Datenvolume und Schlüssel beibehalten. Vor Code-/Datenbankupdates Dienst stoppen und Volume samt Schlüssel konsistent sichern. Niemals `docker compose down -v` als Update verwenden.
+Bearbeite `.env` außerhalb von ChatGPT und führe erneut `node scripts/install.mjs --start` aus. Das baut Server und Plugin neu, ersetzt den Container zwingend (`--force-recreate`) und prüft anschließend Image, Build-Commit, Healthcheck und den effektiven Freigabemodus. `docker compose restart` übernimmt geänderte `.env`-Werte nicht. Den laufenden Stand ohne Änderungen prüft `node scripts/install.mjs --status`. Bei geänderter MCP-URL oder OAuth-Client-ID auch die ChatGPT-Verbindung aktualisieren bzw. das Paket erneut installieren. Datenvolume und Schlüssel beibehalten. Vor Code-/Datenbankupdates Dienst stoppen und Volume samt Schlüssel konsistent sichern. Niemals `docker compose down -v` als Update verwenden.
 
-Für Code-Updates nach sauberem Checkout `git pull --ff-only` und das Skript erneut ausführen. Bei Problemen vorherigen Commit und passendes Datenbankbackup verwenden. CI/Security prüfen weiterhin Quellcode und lokale Artefakte; Release- und Publish-Workflows wurden entfernt.
+Für Code-Updates `node scripts/install.mjs --update` ausführen: Es verlangt einen sauberen Checkout, führt `git pull --ff-only` aus und danach `--start`. Details, Rollback und Diagnose von `approval_required`: [Schreibfreigabe betreiben und prüfen](SCHREIBFREIGABE.md). Bei Problemen vorherigen Commit und passendes Datenbankbackup verwenden. CI/Security prüfen weiterhin Quellcode und lokale Artefakte; Release- und Publish-Workflows wurden entfernt.

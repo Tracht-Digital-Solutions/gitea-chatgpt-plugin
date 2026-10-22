@@ -13,6 +13,8 @@ const supported = new Set([
   '--init',
   '--check',
   '--start',
+  '--update',
+  '--status',
   '--no-docker',
   '--help',
   '--config',
@@ -28,14 +30,14 @@ for (let i = 0; i < args.length; i++) {
 }
 if (args.includes('--help')) {
   console.log(
-    'node scripts/install.mjs [--init | --check] [--start] [--no-docker] [--config PATH]',
+    'node scripts/install.mjs [--init | --check | --status | --update] [--start] [--no-docker] [--config PATH]',
   );
   console.log(
-    '--init prepares .env without overwriting it; --check validates it; default builds server/plugin/Docker; --start also starts Compose.',
+    '--init prepares .env without overwriting it; --check validates it; default builds server/plugin/Docker image only; --start also replaces the running container and verifies it; --update pulls the current Git branch (fast-forward only) and then runs --start; --status verifies the running container without changes.',
   );
   process.exit(0);
 }
-if (!args.includes('--check')) {
+if (!args.includes('--check') && !args.includes('--status')) {
   const example = readFileSync(resolve(root, '.env.example'), 'utf8');
   try {
     // Exclusive creation is the only check: no existence-check/write race.
@@ -52,7 +54,7 @@ if (!args.includes('--check')) {
         envFile +
         '. Eigene Server-/OAuth-Adressen eintragen und das Skript erneut starten.',
     );
-    process.exit(args.includes('--start') ? 2 : 0);
+    process.exit(args.includes('--start') || args.includes('--update') ? 2 : 0);
   } catch (error) {
     if (error.code !== 'EEXIST') throw error;
   }
@@ -157,6 +159,143 @@ function run(command, values, env = process.env) {
     );
 }
 
+/** Captures output for checks; failures name only the command, never its output. */
+function capture(command, values, env = process.env) {
+  const result = spawnSync(command, values, {
+    cwd: root,
+    env,
+    encoding: 'utf8',
+    windowsHide: true,
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  if (result.error || result.status !== 0)
+    throw new Error(
+      'Schritt fehlgeschlagen: ' + command + ' ' + values.slice(0, 3).join(' '),
+    );
+  return result.stdout.trim() + '\n' + result.stderr.trim();
+}
+
+function git(values) {
+  const result = spawnSync('git', ['-C', root, ...values], {
+    encoding: 'utf8',
+    windowsHide: true,
+    stdio: ['ignore', 'pipe', 'ignore'],
+  });
+  return result.status === 0 ? result.stdout.trim() : undefined;
+}
+
+// Only a checkout whose top level is this project counts; an enclosing repository is ignored.
+function checkout() {
+  const top = git(['rev-parse', '--show-toplevel']);
+  return top !== undefined && resolve(top) === root;
+}
+
+function sourceCommit() {
+  const head = checkout() ? git(['rev-parse', 'HEAD']) : undefined;
+  if (!head || !/^[0-9a-f]{40}$/.test(head)) return 'unknown';
+  return (
+    head +
+    (git(['status', '--porcelain', '--untracked-files=no']) ? '-dirty' : '')
+  );
+}
+
+const image = 'gitea-chatgpt-plugin:local';
+const lines = (text) => text.split(/\r?\n/).filter(Boolean);
+const inspect = (id, format) =>
+  lines(capture('docker', ['inspect', '--format', format, id]))[0] ?? '';
+
+/** Proves which build and approval mode the running Compose container uses; prints no configuration values. */
+function verifyDeployment(dockerEnv, env, expectedCommit) {
+  const ids = lines(
+    capture(
+      'docker',
+      ['compose', '--env-file', envFile, 'ps', '-q', 'mcp'],
+      dockerEnv,
+    ),
+  );
+  if (ids.length !== 1)
+    throw new Error(
+      'Kein laufender MCP-Container dieses Compose-Projekts gefunden. Mit --start starten.',
+    );
+  const [id] = ids;
+  const problems = [];
+  const built = lines(
+    capture('docker', ['image', 'inspect', '--format', '{{.Id}}', image]),
+  )[0];
+  if (inspect(id, '{{.Image}}') !== built)
+    problems.push('Container läuft nicht mit dem zuletzt gebauten ' + image);
+  const revision = inspect(
+    id,
+    '{{index .Config.Labels "org.opencontainers.image.revision"}}',
+  );
+  if (expectedCommit && revision !== expectedCommit)
+    problems.push(
+      'Build-Commit ' +
+        (revision || 'unbekannt') +
+        ' entspricht nicht dem Quellstand ' +
+        expectedCommit,
+    );
+  const health = inspect(
+    id,
+    '{{if .State.Health}}{{.State.Health.Status}}{{end}}',
+  );
+  if (health !== 'healthy')
+    problems.push('Healthcheck ' + (health || 'unbekannt'));
+  // The server logs exactly one secret-free startup line; only that line is printed.
+  const ready = lines(capture('docker', ['logs', id]))
+    .filter((line) => line.startsWith('Gitea MCP server ready'))
+    .at(-1);
+  const wanted =
+    (env.REQUIRE_WRITE_APPROVAL ?? 'false') === 'true'
+      ? 'required'
+      : 'disabled';
+  const effective = /writeApproval=(required|disabled)/.exec(ready ?? '')?.[1];
+  if (effective !== wanted)
+    problems.push(
+      'effektiver Freigabemodus ' +
+        (effective ?? 'unbekannt (Startmeldung fehlt, Image veraltet?)') +
+        ', erwartet laut ' +
+        envFile +
+        ': ' +
+        wanted,
+    );
+  // Another running instance (other Compose project or docker run) may still receive proxy traffic.
+  const running = lines(capture('docker', ['ps', '-q']));
+  const others = lines(
+    capture('docker', [
+      'inspect',
+      '--format',
+      '{{.Id}} {{.Name}} {{.Config.Image}} {{index .Config.Labels "org.opencontainers.image.title"}}',
+      ...running,
+    ]),
+  )
+    .map((line) => line.split(' '))
+    .filter(
+      ([other, , ref, title]) =>
+        !other.startsWith(id) &&
+        (ref?.includes('gitea-chatgpt-plugin') ||
+          title === 'gitea-chatgpt-plugin'),
+    )
+    .map(([, name]) => name.replace(/^\//, ''));
+  console.log(
+    'Laufender Container: ' + inspect(id, '{{.Name}}').replace(/^\//, ''),
+  );
+  console.log('Build-Commit: ' + (revision || 'unbekannt'));
+  console.log('Healthcheck: ' + (health || 'unbekannt'));
+  console.log('Startmeldung: ' + (ready ?? 'nicht gefunden'));
+  if (others.length)
+    console.warn(
+      'WARNUNG: Weitere Gitea-MCP-Container laufen: ' +
+        others.join(', ') +
+        '. Prüfen, ob der Reverse Proxy auf einen davon zeigt, und veraltete Instanzen stoppen.',
+    );
+  if (problems.length)
+    throw new Error(
+      'Deployment-Prüfung fehlgeschlagen: ' + problems.join('; '),
+    );
+  console.log('Deployment-Prüfung erfolgreich, Schreibfreigabe: ' + wanted);
+}
+
 try {
   const env = settings();
   if (args.includes('--check')) {
@@ -165,10 +304,45 @@ try {
     );
     process.exit(0);
   }
-  if (args.includes('--start') && args.includes('--no-docker'))
-    throw new Error('--start requires Docker');
+  if (
+    args.includes('--no-docker') &&
+    ['--start', '--update', '--status'].some((a) => args.includes(a))
+  )
+    throw new Error('--start, --update and --status require Docker');
+  const commit = sourceCommit();
+  const expected = commit === 'unknown' ? undefined : commit;
+  const dockerEnv = {
+    ...process.env,
+    ...env,
+    GITEA_ENV_FILE: envFile,
+    BUILD_COMMIT: commit,
+    BUILD_VERSION: JSON.parse(
+      readFileSync(resolve(root, 'package.json'), 'utf8'),
+    ).version,
+  };
+  if (args.includes('--status')) {
+    verifyDeployment(dockerEnv, env, expected);
+    process.exit(0);
+  }
+  if (args.includes('--update')) {
+    if (!checkout())
+      throw new Error('--update benötigt einen Git-Checkout dieses Projekts.');
+    if (git(['status', '--porcelain', '--untracked-files=no']))
+      throw new Error(
+        'Lokale Änderungen an versionierten Dateien; Update abgebrochen. Änderungen sichern oder verwerfen.',
+      );
+    run('git', ['-C', root, 'pull', '--ff-only']);
+    // The pulled installer may contain new deployment steps, so it runs in a fresh process.
+    const next = spawnSync(
+      process.execPath,
+      [fileURLToPath(import.meta.url), '--start', '--config', envFile],
+      { cwd: root, stdio: 'inherit', windowsHide: true },
+    );
+    process.exit(next.status ?? 1);
+  }
   run('pnpm', ['install', '--frozen-lockfile', '--prod=false']);
   run('pnpm', ['build']);
+  run(process.execPath, [resolve(root, 'scripts/build-info.mjs'), commit]);
   const { loadConfig } =
     await import('../dist/apps/mcp-server/src/config/index.js');
   // Only field names escape validation errors, never secret values.
@@ -203,13 +377,33 @@ try {
     ) + '\n',
   );
   if (!args.includes('--no-docker')) {
-    const dockerEnv = { ...process.env, ...env, GITEA_ENV_FILE: envFile };
+    // Keep the previous image for a manual rollback; absent on a first install.
+    spawnSync('docker', ['tag', image, 'gitea-chatgpt-plugin:previous'], {
+      stdio: 'ignore',
+      windowsHide: true,
+    });
+    // A failed build stops here and leaves the running container untouched.
     run('docker', ['compose', '--env-file', envFile, 'build'], dockerEnv);
-    if (args.includes('--start'))
+    if (args.includes('--start')) {
+      // Recreate unconditionally so a new image and changed .env values always take effect; volumes are kept.
       run(
         'docker',
-        ['compose', '--env-file', envFile, 'up', '-d', '--no-build', '--wait'],
+        [
+          'compose',
+          '--env-file',
+          envFile,
+          'up',
+          '-d',
+          '--no-build',
+          '--force-recreate',
+          '--wait',
+        ],
         dockerEnv,
+      );
+      verifyDeployment(dockerEnv, env, expected);
+    } else
+      console.log(
+        'Hinweis: Image gebaut, der laufende Container wurde NICHT ersetzt. Aktivieren mit: node scripts/install.mjs --start',
       );
   }
   console.log(

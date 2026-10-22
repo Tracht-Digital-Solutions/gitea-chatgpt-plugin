@@ -24,7 +24,8 @@ flowchart LR
 - `gitea/client.ts`: ausschließlich definierte API-Anfragen, sichere Fehler, Pagination und Branchschutz.
 - `tools/catalog.ts`: einzeln beschriebene Zod-Schemas und typisierte Anfragebeschreibungen.
 - `tools/service.ts`: Autorisierung je Ausführung, Tokenrotation und Freigabeorchestrierung.
-- `mcp/server.ts`: MCP-Metadaten, Schemas, Annotations und sichere Fehlerresultate.
+- `mcp/server.ts`: MCP-Metadaten, Schemas, Annotations und sichere Fehlerresultate; Beschreibungen der Schreibwerkzeuge erzeugt `describeOperation` passend zum aktiven Freigabemodus.
+- `runtime.ts`: Version, eingebetteter Build-Commit, Startmeldung und Laufzeitdiagnose `get_runtime_status`.
 - `app.ts`: Host-/Originprüfung, Health, Discovery und stateless HTTP-Transport.
 
 Ein neuer MCP-Server pro HTTP-Anfrage verhindert gemeinsam genutzten Benutzersitzungszustand. SQLite-Aktivauswahl ist benutzergebunden; bei parallelen Gesprächen sollten Clients Instanz-IDs explizit angeben. Browser-Sessions und OAuth-State sind kurzlebig im Prozessspeicher; ein Neustart verlangt erneuten Browserlogin. Gitea-Verbindungen und Freigaben sind persistent.

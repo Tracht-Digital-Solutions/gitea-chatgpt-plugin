@@ -27,6 +27,7 @@ Private addresses are denied by default. Explicitly allow only required CIDRs us
 
 ```bash
 node scripts/install.mjs --start
+node scripts/install.mjs --status
 docker compose ps
 docker compose logs --tail=50 mcp
 curl http://127.0.0.1:3000/healthz
@@ -59,4 +60,4 @@ Verify protected-resource discovery, OAuth initialization in MCP Inspector, tool
 
 ## Updates and rollback
 
-Record the source commit used for your local build. Stop the service and consistently back up the entire database volume including SQLite WAL; back up the encryption key separately. Update the source, retain .env, run node scripts/install.mjs --start and recheck health/OAuth/read behavior. Roll back both image and matching database snapshot when needed. Never use `docker compose down -v` for upgrades. Restart clears browser sessions. Losing the key requires reconnecting all accounts. Automated encryption-key migration is not included in v0.1; use controlled reconnection with a new database/key. Define audit retention and deletion policies as the operator.
+Record the source commit used for your local build. Stop the service and consistently back up the entire database volume including SQLite WAL; back up the encryption key separately. Run `node scripts/install.mjs --update`, which keeps .env, key and volume, always recreates the container and verifies build commit and approval mode; then recheck OAuth/read behavior. The previous image is kept as `gitea-chatgpt-plugin:previous`. See the [write approval guide](WRITE-APPROVAL.md). Roll back both image and matching database snapshot when needed. Never use `docker compose down -v` for upgrades. Restart clears browser sessions. Losing the key requires reconnecting all accounts. Automated encryption-key migration is not included in v0.1; use controlled reconnection with a new database/key. Define audit retention and deletion policies as the operator.

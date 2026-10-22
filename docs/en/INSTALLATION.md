@@ -53,7 +53,7 @@ node scripts/install.mjs --start
 
 These commands work in PowerShell, Linux and macOS. The installer installs locked dependencies, compiles TypeScript, validates full server configuration, creates a plugin with your concrete endpoint/client ID, builds Docker locally and starts Compose with a health check. No GitHub release or GHCR image is needed.
 
-Build only: `node scripts/install.mjs`. Without Docker: `node scripts/install.mjs --no-docker`, followed by supervised `pnpm start` under an unprivileged account. Native startup also uses production mode. Use `--config PATH` for an alternative configuration, including Compose startup.
+Build only: `node scripts/install.mjs`; this does not replace the running container. Without Docker: `node scripts/install.mjs --no-docker`, followed by supervised `pnpm start` under an unprivileged account. Native startup also uses production mode. Use `--config PATH` for an alternative configuration, including Compose startup.
 
 Outputs in `artifacts/`:
 
@@ -74,6 +74,6 @@ The ZIP supports clients and authoring/import workflows that accept portable Age
 
 ## 5. Changes and updates
 
-Edit `.env` outside ChatGPT and rerun `node scripts/install.mjs --start`. If the MCP URL or OAuth client ID changes, update the client connection or reinstall the newly built package too. Preserve your key and data volume. Stop the service and consistently back up the database before code/database updates. Never use `docker compose down -v` to upgrade.
+Edit `.env` outside ChatGPT and rerun `node scripts/install.mjs --start`. It rebuilds, always recreates the container (`--force-recreate`) and then verifies image, build commit, health and the effective approval mode. `docker compose restart` does not apply changed `.env` values. `node scripts/install.mjs --status` verifies the running deployment without changes. For code updates run `node scripts/install.mjs --update` (clean checkout, `git pull --ff-only`, then `--start`). See the [write approval guide](WRITE-APPROVAL.md) for rollback and diagnosing `approval_required`. If the MCP URL or OAuth client ID changes, update the client connection or reinstall the newly built package too. Preserve your key and data volume. Stop the service and consistently back up the database before code/database updates. Never use `docker compose down -v` to upgrade.
 
 For code updates, use a clean checkout and `git pull --ff-only`, then rebuild. Roll back to the previous commit and matching database backup if needed. CI/security continue validating source and local artifacts. Release/Publish automation has been removed.

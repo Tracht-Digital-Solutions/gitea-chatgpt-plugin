@@ -119,9 +119,40 @@ function add(
 registerManagementTools(add);
 registerPublishingTools(add);
 
+const approvalNotice =
+  ' Browser approval is required: the first call returns approval_required with an approvalUrl; after the account owner approves the exact change, repeat the identical call with approvalId.';
+const directNotice =
+  ' Runs immediately without browser approval; inspect the exact change before calling.';
+/** Single source for advertised tool descriptions, so they always match the active approval mode. */
+export function describeOperation(
+  operation: Operation,
+  requireWriteApproval: boolean,
+): string {
+  if (!operation.write) return operation.description;
+  return (
+    operation.description +
+    (requireWriteApproval ? approvalNotice : directNotice)
+  );
+}
+/** Advertised input schema; approvalId is only offered while approvals are enabled but still accepted and ignored otherwise. */
+export function advertisedSchema(
+  operation: Operation,
+  requireWriteApproval: boolean,
+): z.ZodObject {
+  return operation.write && !requireWriteApproval
+    ? operation.schema.omit({ approvalId: true })
+    : operation.schema;
+}
+
+add(
+  'get_runtime_status',
+  'Diagnose this MCP server: running version, build commit, effective write approval mode and deployment mode. Returns no secrets.',
+  {},
+);
+
 add(
   'list_instances',
-  'List your connected instances and the approved server configurations.',
+  'List your connected instances and the server configurations enabled by the operator.',
   {},
 );
 add(
@@ -138,7 +169,7 @@ add(
 );
 add(
   'disconnect_instance',
-  'Delete your stored connection and invalidate its outstanding approvals.',
+  'Delete your stored connection and invalidate any outstanding write approvals.',
   { selected: z.string().regex(/^[a-z0-9-]{1,40}$/) },
   undefined,
   true,
@@ -580,7 +611,7 @@ add(
 );
 add(
   'merge_pull_request',
-  'Merge only the explicitly approved current head SHA; never force or bypass rules.',
+  'Merge only when the given head SHA is still the current, mergeable head; never force or bypass rules.',
   {
     ...issue,
     do: z.enum(['merge', 'rebase', 'squash']),
@@ -609,7 +640,7 @@ add('get_release', 'Read a repository release.', { ...repo, id }, (p) => ({
 }));
 add(
   'create_release',
-  'Publish a release only after explicit browser approval.',
+  'Create a release (draft and prerelease by default) for an existing or new tag.',
   {
     ...repo,
     tag_name: ref,

@@ -218,7 +218,7 @@ export function registerPublishingTools(add: RegisterOperation): void {
   );
   add(
     'update_release',
-    'Edit release fields or publish a draft after exact approval.',
+    'Edit release fields or publish a draft release.',
     { ...repo, id, ...releaseEditFields },
     (p) => ({
       path: root(p) + '/releases/' + enc(p.id),
@@ -283,7 +283,7 @@ export function registerPublishingTools(add: RegisterOperation): void {
   );
   add(
     'update_wiki_page',
-    'Replace wiki content or rename the page. Read current content and inspect the full replacement before approval.',
+    'Replace wiki content or rename the page. Read current content and inspect the full replacement before writing.',
     {
       ...repo,
       page_name: slug,

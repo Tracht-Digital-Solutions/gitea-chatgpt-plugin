@@ -25,7 +25,7 @@ const pick = (p: Params, keys: string[]) =>
 const page = (p: Params) => pick(p, ['page', 'limit', 'state']);
 const issueRoot = (p: Params) => root(p) + '/issues/' + enc(p.index);
 
-/** Only supported, task-specific endpoints; every mutation uses the shared human approval gate. */
+/** Only supported, task-specific endpoints; every mutation uses the shared write gate in ToolService. */
 export function registerManagementTools(add: RegisterOperation): void {
   const workflow = {
     ...repo,
@@ -308,7 +308,7 @@ export function registerManagementTools(add: RegisterOperation): void {
     );
     register(
       'delete_project_column',
-      'Delete a Kanban column. Inspect affected cards before approval.',
+      'Delete a Kanban column. Inspect affected cards before deleting.',
       columnTarget,
       (p) => ({ path: column(p), method: 'DELETE' }),
       true,
@@ -451,8 +451,8 @@ export function registerManagementTools(add: RegisterOperation): void {
       action === 'delete'
         ? 'Discard a running stopwatch without booking its elapsed time.'
         : action === 'stop'
-          ? 'Stop an issue stopwatch and book elapsed time at execution time after approval.'
-          : 'Start an issue stopwatch at execution time after approval.',
+          ? 'Stop an issue stopwatch and book the time elapsed until execution.'
+          : 'Start an issue stopwatch at execution time.',
       issue,
       (p) => ({ path: issueRoot(p) + '/stopwatch/' + action, method }),
       true,
