@@ -84,7 +84,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
         })
         .pipe(z.array(instanceSchema)),
       ALLOWED_PRIVATE_CIDRS: z.string().default(''),
-      ALLOW_USER_SERVERS: z.enum(['true', 'false']).default('true'),
+      ALLOW_USER_SERVERS: z.enum(['true', 'false']).default('false'),
     })
     .parse(env);
   const publicUrl = new URL(parsed.PUBLIC_URL);

@@ -1,15 +1,17 @@
 services:
   mcp:
-    image: ghcr.io/tracht-digital-solutions/gitea-chatgpt-plugin:v${GITEA_MCP_VERSION:?Set GITEA_MCP_VERSION from .env.example}
+    image: gitea-chatgpt-plugin:local
+    build: .
     init: true
     stop_grace_period: 15s
     pids_limit: 128
     environment:
       NODE_ENV: production
+      PORT: '3000'
     restart: unless-stopped
-    env_file: .env
+    env_file: ${GITEA_ENV_FILE:-.env}
     ports:
-      - '127.0.0.1:3000:3000'
+      - '127.0.0.1:${PORT:-3000}:3000'
     volumes:
       - gitea-mcp-data:/app/data
     read_only: true

@@ -1,5 +1,19 @@
 # Nachweisbarer Projektfortschritt
 
+## Aktueller Installationsweg, 22.10.2026
+
+GitHub-Releases sind entfernt (Repository-API: leere Liste). Release-/Publish-Workflows, Release-Please-Konfiguration und die reine Release-Downloadprüfung werden entfernt. Historische Tags/Commits bleiben erhalten. Frühere Release-Links und Prüfungen weiter unten sind ausschließlich historische Nachweise und keine aktuellen Installationsanweisungen.
+
+Die Installation erfolgt jetzt mit `node scripts/install.mjs`: `--init` erzeugt eine private `.env` mit zufälligem Schlüssel, `--check` prüft echte Konfigurationswerte und `--start` baut lokal und startet Compose. `--no-docker` ermöglicht native Builds; `--config PFAD` wählt eine andere Datei. Vorhandene Dateien/Schlüssel werden nicht überschrieben. MCP-Endpunkt und öffentliche OAuth-Client-ID werden konkret ins Plugin gebaut; die lokale Konfiguration und Secrets bleiben ausgeschlossen.
+
+`.env.example` ist kommentiert, ohne festen Gitea-Host. Vorgabe `ALLOW_USER_SERVERS=false`: Einstellungen außerhalb von ChatGPT bearbeiten und das Skript erneut ausführen. Deutsche und englische Installations-, Produktions- und ChatGPT-Anleitungen sind entsprechend überarbeitet. CI/Security bleiben bestehen, ohne neue Releases zu erzeugen.
+
+Lokaler Nachweis: `pnpm check` mit **531 erfolgreichen Tests**, sieben E2E-Fälle im normalen Lauf ausdrücklich übersprungen; 159 Schemas und Produktionsbuild erfolgreich. Kernabdeckung: Statements **98,18 %**, Branches **94,64 %**, Functions **100 %**, Lines **99,01 %**. Der neue Installer-Test prüft die einmalige Schlüsselerzeugung, Bestandsschutz, Ablehnung von Beispieladressen und secretfreie Fehler. Das entpackte Quellpaket wurde geprüft, lokal als Produktionsimage gebaut und mit eigenem Datenvolume erfolgreich gestartet.
+
+Der vollständige Aufruf `node scripts/install.mjs --start --config PFAD` wurde zusätzlich mit isolierter Testkonfiguration tatsächlich ausgeführt: Dependency-Installation, Build, feste Plugin-URL/Client-ID, abweichender Host-Port, Docker-Start und Health erfolgreich; Ausschluss des zufälligen Verschlüsselungsschlüssels aus dem Plugin-ZIP geprüft. Die Testcontainer und das separate Testvolume wurden anschließend entfernt.
+
+ChatGPT kann `.env` nicht bearbeiten. Eigener HTTPS-/OAuth-Betrieb und die tatsächliche Kontoabnahme bleiben offen; kein produktiver Endpunkt wird behauptet. Historischer Gesamtfortschritt weiterhin 98 %, die Installationsumstellung ersetzt keine produktive Kontoabnahme.
+
 Start: 21.10.2026. Abschließender geprüfter Meilenstein: **98 %**.
 
 ## Einrichtung aus ChatGPT (21.10.2026)

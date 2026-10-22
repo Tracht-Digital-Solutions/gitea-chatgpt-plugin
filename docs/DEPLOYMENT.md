@@ -36,17 +36,16 @@ Schlüssel sicher verwahren; ohne ihn sind vorhandene Verbindungen nicht wiederh
 GITEA_INSTANCES=[{"id":"work","url":"https://git.example.org"},{"id":"personal","url":"https://code.example.net/gitea"}]
 ```
 
-Bei `ALLOW_USER_SERVERS=true` (Vorgabe) können Nutzer öffentliche HTTPS-Gitea-Server über den aus ChatGPT gelieferten Einrichtungslink selbst verbinden, ohne diese Liste zu ändern. Mit `false` sind ausschließlich Betreiber-Einträge erlaubt. Für bewusst interne Instanzen einen festen Eintrag und den kleinsten nötigen Bereich unter `ALLOWED_PRIVATE_CIDRS` angeben, z. B. `10.20.30.4/32`. Diese Netzwerkausnahmen gelten nie für selbst eingegebene Nutzer-URLs. Keine pauschale Freigabe aller Netze.
+Standardmäßig gilt `ALLOW_USER_SERVERS=false`: Server in der lokalen `.env` konfigurieren und das Installationsskript erneut ausführen. ChatGPT kann diese Einstellungen nicht ändern. Optional erlaubt `true` zusätzliche öffentliche Server im Portal. Für interne Instanzen einen festen Eintrag und den kleinsten nötigen Bereich unter `ALLOWED_PRIVATE_CIDRS` angeben, z. B. `10.20.30.4/32`. Diese Ausnahmen gelten nie für frei eingegebene Nutzer-URLs.
 
 Optional je Gitea-Instanz OAuth-App in Gitea registrieren, Callback `https://<mcp-host>/gitea/callback`, S256-PKCE, Client-ID und ggf. Secret ausschließlich in Betreiber-Secrets unter `oauthClientId`/`oauthClientSecret` der jeweiligen Instanz eintragen. Die Portal-Scopes müssen von der installierten Gitea-Version unterstützt werden. Andernfalls PAT mit `read:user`, `read:repository`, `read:issue` und nur bei Bedarf `write:repository`, `write:issue`, `write:user` für die jeweilige Aufgabe verwenden. Organisations-/Packagerechte nur für diese Aufgaben ergänzen: `write:organization`, `write:package`. Für Gitea-OAuth kann das Instanzobjekt explizite `oauthScopes` enthalten; die Vorgabe wird nicht automatisch erweitert. Nach Änderung im Portal neu verbinden. Siehe [Parameterprüfung und Scope-Beispiel](de/PARAMETER-UND-FUNKTIONSPRUEFUNG.md). Keine Admin-/Runnerrechte pauschal erteilen. Ein zu enger Scope führt zu einer sicheren Gitea-Verweigerung.
 
 ## 3. Docker Compose
 
-Für den Betrieb ohne Quellcode und lokalen Build verwende das Deployment-ZIP aus dem Release: [Produktionsinstallation](de/PRODUKTION.md). `GITEA_MCP_VERSION` aus `.env.example` wählt die veröffentlichte Imageversion. Der Standard-Compose lädt dieses Image; für einen eigenen Build verwende zusätzlich `docker-compose.build.yml`.
+Verwende die [skriptgesteuerte Installation](de/INSTALLATION.md). Der Standard-Compose baut das Produktionsimage lokal. Release-Downloads und vorgebaute GHCR-Images sind nicht erforderlich.
 
 ```bash
-docker compose pull
-docker compose up -d --no-build --wait
+node scripts/install.mjs --start
 docker compose ps
 docker compose logs --tail=50 mcp
 curl http://127.0.0.1:3000/healthz
@@ -92,6 +91,6 @@ Discovery per HTTPS abrufen, dann MCP Inspector oder kompatiblen Client mit OAut
 
 ## 7. Updates, Backup, Rollback
 
-Release-Tag und Containerdigest festhalten. Vor Update Dienst stoppen und das gesamte Datenvolume inklusive SQLite-WAL konsistent sichern; Schlüssel separat sichern. Release-Prüfsummen kontrollieren, Code/Image auf ausgewählten Tag/Digest aktualisieren, neu starten und Health/OAuth-Lesen prüfen. Bei Problemen Dienst stoppen und zum vorherigen Image **und** dem passenden konsistenten Datenbankbackup zurückkehren. Niemals `docker compose down -v` als Updatebefehl verwenden. Schemaänderungen müssen künftig migrations-/rollbackfähig dokumentiert werden.
+Commit-ID des eigenen Builds festhalten. Vor Update Dienst stoppen und das gesamte Datenvolume inklusive SQLite-WAL konsistent sichern; Schlüssel separat sichern. Quellcode aktualisieren, `.env` beibehalten und `node scripts/install.mjs --start` ausführen. Bei Problemen vorherigen Quellstand bauen und das passende Datenbankbackup verwenden. Niemals `docker compose down -v` als Updatebefehl verwenden.
 
 Prozessneustart beendet Browsersitzungen. Nach Verlust des Verschlüsselungsschlüssels müssen Benutzer alle Gitea-Verbindungen neu einrichten. Schlüsselrotation erfolgt in v0.1 durch kontrollierte Neuverbindung mit neuer Datenbank; eine automatische Re-Encryption-Migration wird noch nicht angeboten. Auditaufbewahrung und verschlüsselte Backups sind Betreiberaufgaben.

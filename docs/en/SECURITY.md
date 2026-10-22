@@ -1,5 +1,7 @@
 # Security model
 
+Default `ALLOW_USER_SERVERS=false`: edit server/OAuth settings in local `.env` and apply them with the installation script, outside ChatGPT. The public-server portal flow described below is an explicit opt-in.
+
 OAuth resource tokens must have valid RS256/ES256 signatures, exact issuer/audience, subject, issued-at, expiration and required `gitea.read`/`gitea.write` scope. The server checks identity on every HTTP request and expiry/scope for every tool call. Provider revocation takes effect at short access-token expiry; immediate token introspection is not implemented. The configured provider/JWKS are trusted operator infrastructure.
 
 Gitea credentials are separate from MCP tokens. The browser portal uses Authorization Code with state and S256-PKCE, HttpOnly/Secure/SameSite cookies, expiry, CSRF and same-origin checks. PATs never pass through chat/tool parameters. Credentials and rotating refresh tokens are stored with AES-256-GCM and user/instance-bound associated data. Protect the encryption key separately from database/backups; compromise of both exposes credentials. Failed refresh disconnects; tokens without refresh grants require reconnection. Disconnect deletes local secrets and approvals; revoke the upstream Gitea grant separately.
