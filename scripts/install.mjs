@@ -1,6 +1,6 @@
 import process from 'node:process';
 import console from 'node:console';
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath, URL } from 'node:url';
 import { parseEnv } from 'node:util';
@@ -35,26 +35,27 @@ if (args.includes('--help')) {
   );
   process.exit(0);
 }
-if (!existsSync(envFile)) {
-  if (args.includes('--check')) {
-    console.error('Keine Konfiguration vorhanden. Zuerst --init ausführen.');
-    process.exit(1);
-  }
+if (!args.includes('--check')) {
   const example = readFileSync(resolve(root, '.env.example'), 'utf8');
-  writeFileSync(
-    envFile,
-    example.replace(
-      /^ENCRYPTION_KEY=.*$/m,
-      'ENCRYPTION_KEY=' + randomBytes(32).toString('hex'),
-    ),
-    { flag: 'wx', mode: 0o600 },
-  );
-  console.log(
-    'Konfiguration angelegt: ' +
-      envFile +
-      '. Eigene Server-/OAuth-Adressen eintragen und das Skript erneut starten.',
-  );
-  process.exit(args.includes('--start') ? 2 : 0);
+  try {
+    // Exclusive creation is the only check: no existence-check/write race.
+    writeFileSync(
+      envFile,
+      example.replace(
+        /^ENCRYPTION_KEY=.*$/m,
+        'ENCRYPTION_KEY=' + randomBytes(32).toString('hex'),
+      ),
+      { flag: 'wx', mode: 0o600 },
+    );
+    console.log(
+      'Konfiguration angelegt: ' +
+        envFile +
+        '. Eigene Server-/OAuth-Adressen eintragen und das Skript erneut starten.',
+    );
+    process.exit(args.includes('--start') ? 2 : 0);
+  } catch (error) {
+    if (error.code !== 'EEXIST') throw error;
+  }
 }
 if (args.includes('--init')) {
   console.log('Vorhandene Konfiguration bleibt unverändert: ' + envFile);
@@ -134,11 +135,20 @@ function settings() {
 function run(command, values, env = process.env) {
   // Windows batch launch uses fixed commands; paths and configuration values never become shell code.
   const windowsPnpm = process.platform === 'win32' && command === 'pnpm';
-  const result = spawnSync(
-    windowsPnpm ? 'cmd.exe' : command,
-    windowsPnpm ? ['/d', '/s', '/c', ['pnpm', ...values].join(' ')] : values,
-    { cwd: root, env, stdio: 'inherit', windowsHide: true },
-  );
+  const pnpmCommands = {
+    'install --frozen-lockfile --prod=false':
+      'pnpm install --frozen-lockfile --prod=false',
+    build: 'pnpm build',
+    package: 'pnpm package',
+  };
+  const batch = Object.hasOwn(pnpmCommands, values.join(' '))
+    ? pnpmCommands[values.join(' ')]
+    : undefined;
+  if (windowsPnpm && !batch) throw new Error('Unsupported pnpm build step');
+  const options = { cwd: root, env, stdio: 'inherit', windowsHide: true };
+  const result = windowsPnpm
+    ? spawnSync('cmd.exe', ['/d', '/s', '/c', batch], options)
+    : spawnSync(command, values, options);
   if (result.error || result.status !== 0)
     throw new Error(
       'Schritt fehlgeschlagen: ' + command + ' ' + values.join(' '),
